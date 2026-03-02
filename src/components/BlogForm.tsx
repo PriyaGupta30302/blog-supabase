@@ -25,12 +25,15 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
 
   const modules = useMemo(() => ({
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ color: [] }, { background: [] }],
+      ['blockquote', 'code-block'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ align: [] }],
       ['link', 'image'],
       ['clean'],
-      [{ align: [] }],
     ],
   }), []);
 
