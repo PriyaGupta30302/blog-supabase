@@ -100,6 +100,7 @@ export default function SignUpPage() {
                 required
               />
             </div>
+            <div id="clerk-captcha" className="mb-4"></div>
             <button
               type="submit"
               className="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200"
