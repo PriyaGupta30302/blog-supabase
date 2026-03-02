@@ -12,6 +12,7 @@ interface Blog {
   img: string | null;
   author_name: string;
   tags: string[];
+  slug: string;
   created_at: string;
 }
 
@@ -60,7 +61,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {blogs.map((blog) => (
               <Link 
-                href={`/blog/${blog.id}`} 
+                href={`/blog/${blog.slug}`} 
                 key={blog.id}
                 className="group cursor-pointer block"
               >

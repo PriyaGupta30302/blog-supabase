@@ -2,14 +2,15 @@ import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
+import BlogContent from "@/components/BlogContent";
 
-export default async function BlogDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
-    .eq('id', id)
+    .eq('slug', slug)
     .single();
 
   if (error || !blog) {
@@ -69,12 +70,7 @@ export default async function BlogDetailPage({ params }: { params: { id: string 
         )}
 
         {/* Blog Content */}
-        <article className="prose prose-lg max-w-none">
-          <div 
-            className="blog-content"
-            dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
-          />
-        </article>
+        <BlogContent htmlContent={sanitizedContent} />
 
         {/* Footer Info */}
         <footer className="mt-16 pt-8 border-t border-gray-100">
@@ -84,38 +80,6 @@ export default async function BlogDetailPage({ params }: { params: { id: string 
           </div>
         </footer>
       </main>
-
-      <style jsx global>{`
-        .blog-content {
-          line-height: 1.8;
-          color: #374151;
-        }
-        .blog-content h1, .blog-content h2, .blog-content h3 {
-          margin-top: 2rem;
-          margin-bottom: 1rem;
-          font-weight: 800;
-          color: #111827;
-        }
-        .blog-content p {
-          margin-bottom: 1.5rem;
-        }
-        .blog-content ul, .blog-content ol {
-          margin-bottom: 1.5rem;
-          padding-left: 1.5rem;
-        }
-        .blog-content blockquote {
-          border-left: 4px solid #3b82f6;
-          padding-left: 1.5rem;
-          font-style: italic;
-          color: #4b5563;
-          margin: 2rem 0;
-        }
-        .blog-content img {
-          max-width: 100%;
-          border-radius: 1rem;
-          margin: 2rem 0;
-        }
-      `}</style>
     </div>
   );
 }

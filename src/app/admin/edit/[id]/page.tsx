@@ -3,7 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import EditBlogClient from "@/components/EditBlogClient";
 
-export default async function EditBlogPage({ params }: { params: { id: string } }) {
+export default async function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { userId } = await auth();
   const user = await currentUser();
 
@@ -21,7 +22,7 @@ export default async function EditBlogPage({ params }: { params: { id: string } 
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !blog) {

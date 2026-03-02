@@ -5,8 +5,18 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function AdminBlogList({ initialBlogs }: { initialBlogs: any[] }) {
-  const [blogs, setBlogs] = useState(initialBlogs);
+interface Blog {
+  id: string;
+  title: string;
+  img?: string;
+  author_name?: string;
+  tags?: string[];
+  slug: string;
+  created_at: string;
+}
+
+export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }) {
+  const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
@@ -75,8 +85,8 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: any[] })
                 <td className="px-8 py-6">
                   <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition duration-200">
                     <Link 
-                      href={`/blog/${blog.id}`} 
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      href={`/blog/${blog.slug}`}
+                      className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors font-medium text-sm group"
                       title="View"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

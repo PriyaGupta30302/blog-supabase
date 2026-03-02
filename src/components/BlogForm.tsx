@@ -49,12 +49,19 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
         finalImageUrl = await uploadBlogImage(imageFile);
       }
 
+      // Generate slug from title
+      const slug = title
+        .toLowerCase()
+        .replace(/[^\w ]+/g, '')
+        .replace(/ +/g, '-');
+
       const blogData = {
         title,
         description: content,
         img: finalImageUrl,
         author_name: authorName,
         tags: tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag !== ''),
+        slug: slug,
       };
 
       let result;
@@ -109,12 +116,27 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none text-gray-900 transition-all"
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none text-gray-900 transition-all font-semibold"
             placeholder="A compelling title..."
             required
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">URL Slug (Auto-generated)</label>
+          <div className="w-full p-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 flex items-center overflow-hidden">
+            <span className="text-gray-400 mr-2 shrink-0">/blog/</span>
+            <span className="truncate">
+              {title
+                .toLowerCase()
+                .replace(/[^\w ]+/g, '')
+                .replace(/ +/g, '-')}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Author Name</label>
           <input
