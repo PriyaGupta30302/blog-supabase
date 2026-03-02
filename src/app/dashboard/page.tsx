@@ -15,7 +15,15 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Header />
-      <ClientDashboard user={user} initialBlogs={blogs || []} />
+      <ClientDashboard 
+        user={user ? {
+          id: user.id,
+          firstName: user.firstName,
+          username: user.username,
+          publicMetadata: user.publicMetadata,
+        } : null} 
+        initialBlogs={blogs || []} 
+      />
     </div>
   );
 }
