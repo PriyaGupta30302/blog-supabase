@@ -15,6 +15,7 @@ interface Blog {
   created_at: string;
 }
 
+ 
 export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }) {
   const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
   const [loading, setLoading] = useState<string | null>(null);

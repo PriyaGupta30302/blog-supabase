@@ -44,7 +44,7 @@ export default function Home() {
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto">
             Discover the latest thoughts, ideas, and stories from our community.
-          </p>
+          </p> 
         </div>
 
         {loading ? (

@@ -11,7 +11,7 @@ export default async function EditBlogPage({ params }: { params: Promise<{ id: s
   if (!userId) {
     redirect("/sign-in");
   }
-
+ 
   const isAdmin = user?.publicMetadata?.role === "admin";
   // The user requested that only admin handle this page.
   if (!isAdmin) {

@@ -13,7 +13,7 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false });
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-gray-900"> 
       <Header />
       <ClientDashboard 
         user={user ? {
