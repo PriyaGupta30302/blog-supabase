@@ -24,7 +24,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     <div className="min-h-screen bg-white text-gray-900">
       <Header />
       
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Back Link */}
         <a href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 mb-8 transition-colors">
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
             <img 
               src={blog.img} 
               alt={blog.title} 
-              className="w-full h-auto object-cover max-h-[500px]"
+              className="w-full h-auto object-cover "
             />
           </div>
         )}

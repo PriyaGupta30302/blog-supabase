@@ -7,15 +7,12 @@ import { supabase } from '@/lib/supabase';
 import { uploadBlogImage } from '@/lib/storage';
 import { convertToWebP } from '@/lib/image-utils';
 import { useRouter } from 'next/navigation';
-import 'react-quill-new/dist/quill.snow.css';
-
-// Dynamic import for ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
+import RichTextEditor from './RichTextEditor';
 
 export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () => void, initialData?: any }) {
   const { user } = useUser();
   const [title, setTitle] = useState(initialData?.title || '');
-  const [content, setContent] = useState(initialData?.content || '');
+  const [content, setContent] = useState(initialData?.description || initialData?.content || '');
   const [authorName, setAuthorName] = useState(initialData?.author_name || '');
   const [tags, setTags] = useState(initialData?.tags?.join(', ') || '');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -24,19 +21,9 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const modules = useMemo(() => ({
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ color: [] }, { background: [] }],
-      ['blockquote', 'code-block'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      [{ indent: '-1' }, { indent: '+1' }],
-      [{ align: [] }],
-      ['link', 'image'],
-      ['clean'],
-    ],
-  }), []);
+  const handleContentChange = (data: { html: string }) => {
+    setContent(data.html);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +37,6 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
       
       // If a new image file is selected, upload it
       if (imageFile) {
-        setLoading(true);
         const webpFile = await convertToWebP(imageFile);
         finalImageUrl = await uploadBlogImage(webpFile);
       }
@@ -219,18 +205,12 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
         </div>
       </div>
 
-      <div className="quill-container">
+      <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">Content</label>
-        <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-          <ReactQuill
-            value={content}
-            onChange={setContent}
-            modules={modules}
-            theme="snow"
-            className="bg-white min-h-[300px]"
-            placeholder="Write your story here..."
-          />
-        </div>
+        <RichTextEditor 
+          onContentChange={handleContentChange} 
+          initialContent={content}
+        />
       </div>
 
       <button
@@ -252,31 +232,6 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
           initialData ? 'Update Blog' : 'Publish Blog Post'
         )}
       </button>
-
-      <style jsx global>{`
-        .quill-container .ql-toolbar {
-          border-top: none !important;
-          border-left: none !important;
-          border-right: none !important;
-          border-bottom: 1px solid #e5e7eb !important;
-          background: #f9fafb;
-          padding: 8px 12px;
-        }
-        .quill-container .ql-container {
-          border: none !important;
-          font-family: inherit;
-          font-size: 1rem;
-        }
-        .quill-container .ql-editor {
-          min-height: 300px;
-          line-height: 1.6;
-          color: #1a202c !important;
-        }
-        .quill-container .ql-editor.ql-blank::before {
-          color: #919293ff;
-          font-style: normal;
-        }
-      `}</style>
     </form>
   );
 }

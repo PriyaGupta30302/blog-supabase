@@ -25,13 +25,16 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
   const router = useRouter();
 
   const stripHtml = (html: string) => {
-    const tmp = html.replace(/<[^>]*>?/gm, '');
-    return tmp
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
+    // First decode basic entities that might contain < or >
+    const decoded = html
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
       .replace(/&quot;/g, '"');
+    
+    // Then strip all tags
+    return decoded.replace(/<[^>]*>?/gm, '');
   };
 
   const handleDelete = async (blog: Blog) => {
