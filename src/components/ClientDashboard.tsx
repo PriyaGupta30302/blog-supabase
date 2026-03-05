@@ -24,6 +24,16 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
   const [currentBlogs, setCurrentBlogs] = useState(initialBlogs);
   const router = useRouter();
 
+  const stripHtml = (html: string) => {
+    const tmp = html.replace(/<[^>]*>?/gm, '');
+    return tmp
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"');
+  };
+
   const handleDelete = async (blog: Blog) => {
     if (!confirm('Are you sure you want to delete this blog?')) return;
 
@@ -105,7 +115,7 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
                   {blog.title}
                 </h3>
                 <p className="text-gray-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                  {blog.description || blog.content || ''}
+                  {stripHtml(blog.description || blog.content || '')}
                 </p>
                 
                 <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between gap-2">

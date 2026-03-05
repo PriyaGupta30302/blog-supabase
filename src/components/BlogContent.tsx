@@ -9,7 +9,7 @@ interface BlogContentProps {
 export default function BlogContent({ htmlContent }: BlogContentProps) {
   return (
     <article 
-      className="prose prose-lg max-w-none 
+      className="prose prose-lg max-w-none break-words overflow-x-hidden
         prose-headings:text-gray-900 prose-headings:font-extrabold prose-headings:tracking-tight
         prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6
         prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
