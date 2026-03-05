@@ -22,22 +22,36 @@ export async function uploadBlogImage(file: File) {
 
 export async function deleteBlogImage(imageUrl: string) {
   try {
-    // Extract file path from URL
-    // Public URL format: https://[project-id].supabase.co/storage/v1/object/public/blog-images/[filename]
-    const urlParts = imageUrl.split('/');
+    // Handle potential query parameters and decode URL encoded characters
+    const urlWithoutQuery = imageUrl.split('?')[0];
+    const urlParts = urlWithoutQuery.split('/');
     const fileName = urlParts[urlParts.length - 1];
 
-    if (!fileName) return;
+    if (!fileName) {
+      console.warn('Could not extract filename from URL:', imageUrl);
+      return;
+    }
 
-    const { error } = await supabase.storage
+    // Decode filename in case it's URL-encoded (common for spaces/special chars)
+    const decodedFileName = decodeURIComponent(fileName);
+    console.log('Attempting to delete image from Supabase:', decodedFileName);
+
+    const { data, error } = await supabase.storage
       .from('blog-images')
-      .remove([fileName]);
+      .remove([decodedFileName]);
 
     if (error) {
-      console.error('Error deleting image from storage:', error);
+      console.error('Supabase Storage cleanup error:', error);
       throw error;
     }
-  } catch (err) {
-    console.error('Failed to delete image:', err);
+
+    if (data && data.length === 0) {
+      console.warn('File not found in bucket or RLS permission denied for:', decodedFileName);
+    } else {
+      console.log('Successfully deleted image:', decodedFileName);
+    }
+  } catch (err: any) {
+    console.error('Delete operation failed:', err);
+    throw new Error(`Failed to clean up image: ${err.message || 'Unknown error'}`);
   }
 }

@@ -41,19 +41,24 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
     if (!confirm('Are you sure you want to delete this blog?')) return;
 
     try {
-      // 1. Delete from database
+      // 1. Delete image from storage first if it exists
+      const imageToDelete = blog.img || blog.image_url;
+      if (imageToDelete) {
+        try {
+          await deleteBlogImage(imageToDelete);
+        } catch (imgErr: any) {
+          console.error('Image cleanup failed:', imgErr);
+          alert(`Warning: Image cleanup failed (${imgErr.message}). The blog record will still be deleted.`);
+        }
+      }
+
+      // 2. Delete from database
       const { error: dbError } = await supabase
         .from('blogs')
         .delete()
         .eq('id', blog.id);
 
       if (dbError) throw dbError;
-
-      // 2. Delete image from storage if it exists
-      const imageToDelete = blog.img || blog.image_url;
-      if (imageToDelete) {
-        await deleteBlogImage(imageToDelete);
-      }
 
       // 3. Update local state
       setCurrentBlogs(currentBlogs.filter((b) => b.id !== blog.id));

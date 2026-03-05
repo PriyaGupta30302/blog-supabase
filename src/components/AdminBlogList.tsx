@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { deleteBlogImage } from '@/lib/storage';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -21,21 +22,35 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (blog: Blog) => {
     if (!confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) return;
     
-    setLoading(id);
+    setLoading(blog.id);
     try {
+      // 1. Attempt to delete image from storage if it exists
+      if (blog.img) {
+        try {
+          await deleteBlogImage(blog.img);
+        } catch (imgErr: any) {
+          console.error('Image cleanup failed:', imgErr);
+          // We alert the user but continue with the blog record deletion
+          alert(`Warning: Image cleanup failed (${imgErr.message}). The blog record will still be deleted.`);
+        }
+      }
+
+      // 2. Delete blog record from database
       const { error } = await supabase
         .from('blogs')
         .delete()
-        .eq('id', id);
+        .eq('id', blog.id);
 
       if (error) throw error;
 
-      setBlogs(blogs.filter(blog => blog.id !== id));
+      setBlogs(blogs.filter(b => b.id !== blog.id));
       router.refresh();
+      alert('Blog deleted successfully!');
     } catch (err: any) {
+      console.error('Blog deletion error:', err);
       alert(err.message || 'Failed to delete blog');
     } finally {
       setLoading(null);
@@ -105,7 +120,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                       </svg>
                     </Link>
                     <button 
-                      onClick={() => handleDelete(blog.id)}
+                      onClick={() => handleDelete(blog)}
                       disabled={loading === blog.id}
                       className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                       title="Delete"
