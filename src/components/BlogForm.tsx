@@ -247,7 +247,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
           line-height: 1.6;
         }
         .quill-container .ql-editor.ql-blank::before {
-          color: #9ca3af;
+          color: #919293ff;
           font-style: normal;
         }
       `}</style>
