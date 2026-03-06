@@ -51,14 +51,14 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-foreground/60 mt-1">
             Welcome back, {user?.firstName || user?.username || 'Blogger'}!
           </p>
         </div>
         <button 
           onClick={() => router.push('/dashboard/create')}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200 shadow-md"
+          className="bg-primary text-primary-foreground px-6 py-2 rounded-xl font-medium hover:bg-primary-hover transition-all shadow-md active:scale-95"
         >
           Create New Blog
         </button>
@@ -68,7 +68,7 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentBlogs.length > 0 ? (
           currentBlogs.map((blog) => (
-            <div key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 group flex flex-col">
+            <div key={blog.id} className="bg-card rounded-2xl overflow-hidden shadow-sm border border-card-border hover:shadow-xl transition-all duration-300 group flex flex-col">
               {(blog.img || blog.image_url) ? (
                 <div className="h-48 overflow-hidden">
                   <img 
@@ -78,28 +78,28 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
                   />
                 </div>
               ) : (
-                <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-                  <span className="text-blue-200 text-5xl font-bold">{blog.title[0]}</span>
+                <div className="h-48 bg-gradient-to-br from-primary-light to-primary/5 flex items-center justify-center">
+                  <span className="text-primary-light text-5xl font-bold">{blog.title[0]}</span>
                 </div>
               )}
               <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-center text-xs text-gray-400 mb-3 space-x-2">
+                <div className="flex items-center text-xs text-foreground/40 mb-3 space-x-2">
                   <span>{formatDate(blog.created_at)}</span>
                   <span>•</span>
                   <span>{blog.author_id === user?.id ? 'Your post' : 'Public'}</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition duration-200 line-clamp-2">
+                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-200 line-clamp-2">
                   {blog.title}
                 </h3>
-                <p className="text-gray-600 text-sm line-clamp-3 mb-4 leading-relaxed">
+                <p className="text-foreground/60 text-sm line-clamp-3 mb-4 leading-relaxed">
                   {stripHtml(blog.description || blog.content || '')}
                 </p>
                 
-                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between gap-2">
+                <div className="mt-auto pt-4 border-t border-card-border flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Link 
                       href={`/blog/${blog.slug}`}
-                      className="text-blue-600 p-2 hover:bg-blue-50 rounded-lg transition duration-200"
+                      className="text-primary p-2 hover:bg-primary-light rounded-lg transition-colors"
                       title="View Blog"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
                     </Link>
                     <Link 
                       href={`/dashboard/edit/${blog.id}`}
-                      className="text-green-600 p-2 hover:bg-green-50 rounded-lg transition duration-200"
+                      className="text-green-600 p-2 hover:bg-green-50 rounded-lg transition-colors"
                       title="Edit Blog"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +118,7 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
                     </Link>
                     <button 
                       onClick={() => handleDelete(blog)}
-                      className="text-red-600 p-2 hover:bg-red-50 rounded-lg transition duration-200"
+                      className="text-red-500 p-2 hover:bg-red-50 rounded-lg transition-colors"
                       title="Delete Blog"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
                   
                   <Link 
                     href={`/blog/${blog.slug}`}
-                    className="text-blue-600 font-semibold text-sm hover:translate-x-1 transition duration-200 flex items-center"
+                    className="text-primary font-semibold text-sm hover:translate-x-1 transition duration-200 flex items-center"
                   >
                     Read More 
                     <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

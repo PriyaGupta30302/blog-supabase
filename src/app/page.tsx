@@ -42,8 +42,8 @@ export default function Home() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
-            Latest <span className="text-blue-600">Stories</span>
+          <h1 className="text-5xl font-extrabold text-foreground mb-4 tracking-tight">
+            Latest <span className="text-primary">Stories</span>
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto">
             Discover the latest thoughts, ideas, and stories from our community.
@@ -63,7 +63,7 @@ export default function Home() {
         ) : blogs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => (
-              <div key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 group flex flex-col">
+              <div key={blog.id} className="bg-card rounded-2xl overflow-hidden shadow-sm border border-card-border hover:shadow-xl transition-all duration-300 group flex flex-col">
                 <Link href={`/blog/${blog.slug}`} className="block">
                   {blog.img ? (
                     <div className="h-48 overflow-hidden">
@@ -74,33 +74,33 @@ export default function Home() {
                       />
                     </div>
                   ) : (
-                    <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-                      <span className="text-blue-200 text-5xl font-bold">{blog.title[0]}</span>
+                    <div className="h-48 bg-gradient-to-br from-primary-light to-primary/5 flex items-center justify-center">
+                      <span className="text-primary-light text-5xl font-bold">{blog.title[0]}</span>
                     </div>
                   )}
                 </Link>
 
                 <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-center text-xs text-gray-400 mb-3 space-x-2">
+                  <div className="flex items-center text-xs text-foreground/40 mb-3 space-x-2">
                     <span>{formatDate(blog.created_at)}</span>
                     <span>•</span>
                     <span>Public</span>
                   </div>
                   
                   <Link href={`/blog/${blog.slug}`}>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition duration-200 line-clamp-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-200 line-clamp-2">
                       {blog.title}
                     </h3>
                   </Link>
                   
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 leading-relaxed">
+                  <p className="text-foreground/60 text-sm line-clamp-3 mb-4 leading-relaxed">
                     {stripHtml(blog.description || blog.content || '')}
                   </p>
                   
-                  <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-end">
+                  <div className="mt-auto pt-4 border-t border-card-border flex items-center justify-end">
                     <Link 
                       href={`/blog/${blog.slug}`}
-                      className="text-blue-600 font-semibold text-sm hover:translate-x-1 transition duration-200 flex items-center"
+                      className="text-primary font-semibold text-sm hover:translate-x-1 transition duration-200 flex items-center"
                     >
                       Read More 
                       <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

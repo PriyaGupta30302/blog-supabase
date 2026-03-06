@@ -48,51 +48,51 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-lg border border-card-border overflow-hidden transition-colors">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b border-gray-100">
+          <thead className="bg-muted border-b border-card-border">
             <tr>
-              <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Blog Post</th>
-              <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Author</th>
-              <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Date</th>
-              <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Actions</th>
+              <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Blog Post</th>
+              <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Author</th>
+              <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Date</th>
+              <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-card-border">
             {blogs.map((blog) => (
-              <tr key={blog.id} className="hover:bg-gray-50/50 transition duration-200 group">
+              <tr key={blog.id} className="hover:bg-muted/50 transition duration-200 group">
                 <td className="px-8 py-6">
                   <div className="flex items-center">
-                    <div className="h-12 w-16 bg-gray-100 rounded-lg mr-4 overflow-hidden flex-shrink-0 border border-gray-100">
+                    <div className="h-12 w-16 bg-muted rounded-lg mr-4 overflow-hidden flex-shrink-0 border border-card-border">
                       {blog.img ? (
                         <img src={blog.img} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 font-bold">{blog.title[0]}</div>
+                        <div className="w-full h-full flex items-center justify-center text-primary font-bold bg-primary-light">{blog.title[0]}</div>
                       )}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition duration-200 line-clamp-1">{blog.title}</div>
-                      <div className="text-xs text-gray-400 mt-1">{blog.tags?.join(' • ') || 'No tags'}</div>
+                      <div className="text-sm font-bold text-foreground group-hover:text-primary transition duration-200 line-clamp-1">{blog.title}</div>
+                      <div className="text-xs text-foreground/40 mt-1">{blog.tags?.join(' • ') || 'No tags'}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center">
-                    <div className="h-7 w-7 rounded-full bg-blue-50 flex items-center justify-center text-[10px] font-bold text-blue-600 mr-2">
+                    <div className="h-7 w-7 rounded-full bg-primary-light flex items-center justify-center text-[10px] font-bold text-primary mr-2">
                       {blog.author_name?.[0] || 'A'}
                     </div>
-                    <span className="text-sm font-medium text-gray-600">{blog.author_name || 'Admin'}</span>
+                    <span className="text-sm font-medium text-foreground/70">{blog.author_name || 'Admin'}</span>
                   </div>
                 </td>
-                <td className="px-8 py-6 text-sm text-gray-400">
+                <td className="px-8 py-6 text-sm text-foreground/40">
                   {formatDate(blog.created_at)}
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition duration-200">
                     <Link 
                       href={`/blog/${blog.slug}`}
-                      className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors font-medium text-sm group"
+                      className="inline-flex items-center px-4 py-2 bg-primary-light text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium text-sm group"
                       title="View"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                     </Link>
                     <Link 
                       href={`/admin/edit/${blog.id}`} 
-                      className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                      className="p-2 text-foreground/40 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition"
                       title="Edit"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                     <button 
                       onClick={() => handleDelete(blog)}
                       disabled={loading === blog.id}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                      className="p-2 text-foreground/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
                       title="Delete"
                     >
                       {loading === blog.id ? (
@@ -122,7 +122,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                         </svg>
                       ) : (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       )}
                     </button>
@@ -133,11 +133,12 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
           </tbody>
         </table>
         {blogs.length === 0 && (
-          <div className="p-12 text-center text-gray-400 font-medium">
+          <div className="p-12 text-center text-foreground/30 font-medium">
             No blog posts available to manage.
           </div>
         )}
       </div>
     </div>
+
   );
 }

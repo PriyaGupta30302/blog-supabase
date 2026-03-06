@@ -468,11 +468,11 @@ const MenuBar = ({ editor, onImageUpload, readTime }: any) => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 12px',
-            backgroundColor: '#f0f4ff',
+            backgroundColor: 'var(--primary-light)',
             borderRadius: '6px',
             fontSize: '14px',
-            fontWeight: '500',
-            color: '#0055cc',
+            fontWeight: '600',
+            color: 'var(--primary)',
             whiteSpace: 'nowrap',
           }}
         >

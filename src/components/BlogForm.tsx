@@ -100,34 +100,34 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-card p-8 rounded-2xl shadow-lg border border-card-border transition-colors">
+      <h2 className="text-2xl font-bold text-foreground mb-6">
         {initialData ? 'Edit Blog' : 'Create New Blog'}
       </h2>
       
       {error && (
-        <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md text-sm">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 rounded-md text-sm">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none text-gray-900 transition-all font-semibold"
+            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all font-semibold"
             placeholder="A compelling title..."
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">URL Slug (Auto-generated)</label>
-          <div className="w-full p-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 flex items-center overflow-hidden">
-            <span className="text-gray-400 mr-2 shrink-0">/blog/</span>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">URL Slug (Auto-generated)</label>
+          <div className="w-full p-3 bg-muted border border-card-border rounded-xl text-foreground/40 flex items-center overflow-hidden">
+            <span className="text-foreground/30 mr-2 shrink-0">/blog/</span>
             <span className="truncate">
               {title
                 .toLowerCase()
@@ -140,12 +140,12 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Author Name</label>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">Author Name</label>
           <input
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none text-gray-900 transition-all"
+            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all"
             placeholder="Your name or pen name"
             required
           />
@@ -154,10 +154,10 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Featured Image</label>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">Featured Image</label>
           <div className="relative group/img">
             <label className={`block cursor-pointer border-2 border-dashed rounded-xl overflow-hidden transition-all duration-300 min-h-[160px] relative ${
-              (imageUrl || imageFile) ? 'border-blue-400 bg-gray-50' : 'border-gray-200 bg-gray-50 hover:border-blue-300'
+              (imageUrl || imageFile) ? 'border-primary bg-background' : 'border-card-border bg-background hover:border-primary/50'
             }`}>
               <input
                 type="file"
@@ -181,13 +181,13 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
                 </div>
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                  <svg className="w-10 h-10 text-gray-400 mb-2 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-10 h-10 text-foreground/30 mb-2 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-foreground/50">
                     Click to upload featured image
                   </span>
-                  <span className="text-xs text-gray-400 mt-1">
+                  <span className="text-xs text-foreground/30 mt-1">
                     (PNG, JPG, WebP)
                   </span>
                 </div>
@@ -195,7 +195,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             </label>
             {(imageFile) && (
               <div className="absolute top-2 right-2 z-10">
-                <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md">
+                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full shadow-md">
                   NEW
                 </span>
               </div>
@@ -204,29 +204,31 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Tags (comma separated)</label>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">Tags (comma separated)</label>
           <input
             type="text"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none text-gray-900 transition-all"
+            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all"
             placeholder="Nextjs, Tech, Lifestyle"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Content</label>
-        <RichTextEditor 
-          onContentChange={handleContentChange} 
-          initialContent={content}
-        />
+        <label className="block text-sm font-semibold text-foreground/70 mb-2">Content</label>
+        <div className="border border-card-border rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary transition-all">
+          <RichTextEditor 
+            onContentChange={handleContentChange} 
+            initialContent={content}
+          />
+        </div>
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className={`w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-200 hover:bg-blue-700 active:scale-[0.98] transition-all transform ${
+        className={`w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-primary/20 hover:bg-primary-hover active:scale-[0.98] transition-all transform ${
           loading ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
