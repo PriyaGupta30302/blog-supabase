@@ -180,8 +180,8 @@
 .ProseMirror h1 {
   font-size: 2.5em;
   font-weight: 800;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
   line-height: 1.2;
   color: #111827;
 }
@@ -189,8 +189,8 @@
 .ProseMirror h2 {
   font-size: 2em;
   font-weight: 700;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
   line-height: 1.3;
   color: #1f2937;
 }
@@ -198,14 +198,14 @@
 .ProseMirror h3 {
   font-size: 1.5em;
   font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
   line-height: 1.4;
   color: #374151;
 }
 
 .ProseMirror p {
-  margin: 1em 0;
+  margin: 0.25rem 0;
 }
 
 .ProseMirror blockquote {
@@ -324,7 +324,7 @@
 .ProseMirror hr {
   border: none;
   border-top: 2px solid #e5e7eb;
-  margin: 2em 0;
+  margin: 1rem 0;
 }
 
 /* Upload Progress */
