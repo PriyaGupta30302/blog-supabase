@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { deleteBlogImage } from '@/lib/storage';
+import { deleteBlogAction } from '@/app/actions';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -27,24 +28,12 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
     
     setLoading(blog.id);
     try {
-      // 1. Attempt to delete image from storage if it exists
-      if (blog.img) {
-        try {
-          await deleteBlogImage(blog.img);
-        } catch (imgErr: any) {
-          console.error('Image cleanup failed:', imgErr);
-          // We alert the user but continue with the blog record deletion
-          alert(`Warning: Image cleanup failed (${imgErr.message}). The blog record will still be deleted.`);
-        }
+      // Use the server action for secure deletion
+      const result = await deleteBlogAction(blog.id, blog.img || null);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete blog');
       }
-
-      // 2. Delete blog record from database
-      const { error } = await supabase
-        .from('blogs')
-        .delete()
-        .eq('id', blog.id);
-
-      if (error) throw error;
 
       setBlogs(blogs.filter(b => b.id !== blog.id));
       router.refresh();

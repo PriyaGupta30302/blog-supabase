@@ -5,6 +5,7 @@ import BlogForm from '@/components/BlogForm';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { deleteBlogImage } from '@/lib/storage';
+import { deleteBlogAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 interface Blog {
@@ -40,24 +41,13 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
     if (!confirm('Are you sure you want to delete this blog?')) return;
 
     try {
-      // 1. Delete image from storage first if it exists
-      const imageToDelete = blog.img || blog.image_url;
-      if (imageToDelete) {
-        try {
-          await deleteBlogImage(imageToDelete);
-        } catch (imgErr: any) {
-          console.error('Image cleanup failed:', imgErr);
-          alert(`Warning: Image cleanup failed (${imgErr.message}). The blog record will still be deleted.`);
-        }
+      // Use the server action for secure deletion
+      const imageUrl = blog.img || blog.image_url || null;
+      const result = await deleteBlogAction(blog.id, imageUrl);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete blog');
       }
-
-      // 2. Delete from database
-      const { error: dbError } = await supabase
-        .from('blogs')
-        .delete()
-        .eq('id', blog.id);
-
-      if (dbError) throw dbError;
 
       // 3. Update local state
       setCurrentBlogs(currentBlogs.filter((b) => b.id !== blog.id));
