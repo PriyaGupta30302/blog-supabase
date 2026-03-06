@@ -5,10 +5,13 @@ import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
+import { stripHtml, formatDate } from '@/lib/text-utils';
+
 interface Blog {
   id: string;
   title: string;
-  description: string;
+  description?: string;
+  content?: string;
   img: string | null;
   author_name: string;
   tags: string[];
@@ -58,63 +61,55 @@ export default function Home() {
             ))}
           </div>
         ) : blogs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => (
-              <Link 
-                href={`/blog/${blog.slug}`} 
-                key={blog.id}
-                className="group cursor-pointer block"
-              >
-                <div className="relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-2 border border-gray-100">
-                  {/* Image Container */}
-                  <div className="h-72 overflow-hidden relative">
-                    {blog.img ? (
+              <div key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 group flex flex-col">
+                <Link href={`/blog/${blog.slug}`} className="block">
+                  {blog.img ? (
+                    <div className="h-48 overflow-hidden">
                       <img 
                         src={blog.img} 
                         alt={blog.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                       />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-                        <span className="text-blue-100 text-7xl font-bold opacity-50">{blog.title[0]}</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <span className="text-white font-semibold flex items-center">
-                        Read full story
-                        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </span>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+                      <span className="text-blue-200 text-5xl font-bold">{blog.title[0]}</span>
+                    </div>
+                  )}
+                </Link>
 
-                  {/* Content */}
-                  <div className="p-8">
-                    <div className="flex items-center gap-3 mb-4">
-                      {blog.tags?.[0] && (
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                          {blog.tags[0]}
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-400">
-                        {new Date(blog.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
+                <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center text-xs text-gray-400 mb-3 space-x-2">
+                    <span>{formatDate(blog.created_at)}</span>
+                    <span>•</span>
+                    <span>Public</span>
+                  </div>
+                  
+                  <Link href={`/blog/${blog.slug}`}>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition duration-200 line-clamp-2">
                       {blog.title}
-                    </h2>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
-                          {blog.author_name?.[0] || 'B'}
-                        </div>
-                        <span className="text-sm font-medium text-gray-600">{blog.author_name}</span>
-                      </div>
-                    </div>
+                    </h3>
+                  </Link>
+                  
+                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 leading-relaxed">
+                    {stripHtml(blog.description || blog.content || '')}
+                  </p>
+                  
+                  <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-end">
+                    <Link 
+                      href={`/blog/${blog.slug}`}
+                      className="text-blue-600 font-semibold text-sm hover:translate-x-1 transition duration-200 flex items-center"
+                    >
+                      Read More 
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         ) : (

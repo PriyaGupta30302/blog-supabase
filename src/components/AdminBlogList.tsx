@@ -6,6 +6,7 @@ import { deleteBlogImage } from '@/lib/storage';
 import { deleteBlogAction } from '@/app/actions';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/lib/text-utils';
 
 interface Blog {
   id: string;
@@ -85,7 +86,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                   </div>
                 </td>
                 <td className="px-8 py-6 text-sm text-gray-400">
-                  {new Date(blog.created_at).toLocaleDateString()}
+                  {formatDate(blog.created_at)}
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition duration-200">

@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { deleteBlogImage } from '@/lib/storage';
 import { deleteBlogAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
+import { stripHtml, formatDate } from '@/lib/text-utils';
 
 interface Blog {
   id: string;
@@ -23,19 +24,6 @@ interface Blog {
 export default function ClientDashboard({ user, initialBlogs }: { user: any, initialBlogs: Blog[] }) {
   const [currentBlogs, setCurrentBlogs] = useState(initialBlogs);
   const router = useRouter();
-
-  const stripHtml = (html: string) => {
-    // First decode basic entities that might contain < or >
-    const decoded = html
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&quot;/g, '"');
-    
-    // Then strip all tags
-    return decoded.replace(/<[^>]*>?/gm, '');
-  };
 
   const handleDelete = async (blog: Blog) => {
     if (!confirm('Are you sure you want to delete this blog?')) return;
@@ -96,7 +84,7 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
               )}
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center text-xs text-gray-400 mb-3 space-x-2">
-                  <span>{new Date(blog.created_at).toLocaleDateString()}</span>
+                  <span>{formatDate(blog.created_at)}</span>
                   <span>•</span>
                   <span>{blog.author_id === user?.id ? 'Your post' : 'Public'}</span>
                 </div>
