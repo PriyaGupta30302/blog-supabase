@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { uploadBlogImage } from '@/lib/storage';
 import { convertToWebP } from '@/lib/image-utils';
 import { useRouter } from 'next/navigation';
+import { archiveBlogImageAction } from '@/app/actions';
 import RichTextEditor from './RichTextEditor';
 
 export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () => void, initialData?: any }) {
@@ -37,6 +38,15 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
       
       // If a new image file is selected, upload it
       if (imageFile) {
+        // Archive old image if updating
+        if (initialData?.img) {
+          try {
+            await archiveBlogImageAction(initialData.img);
+          } catch (archiveError) {
+            console.error('Failed to archive old image:', archiveError);
+            // We continue even if archiving fails to ensure the update proceeds
+          }
+        }
         const webpFile = await convertToWebP(imageFile);
         finalImageUrl = await uploadBlogImage(webpFile);
       }
