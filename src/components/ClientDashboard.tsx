@@ -20,7 +20,6 @@ interface Blog {
 }
 
 export default function ClientDashboard({ user, initialBlogs }: { user: any, initialBlogs: Blog[] }) {
-  const [showForm, setShowForm] = useState(false);
   const [currentBlogs, setCurrentBlogs] = useState(initialBlogs);
   const router = useRouter();
 
@@ -80,21 +79,13 @@ export default function ClientDashboard({ user, initialBlogs }: { user: any, ini
           </p>
         </div>
         <button 
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => router.push('/dashboard/create')}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200 shadow-md"
         >
-          {showForm ? 'Cancel' : 'Create New Blog'}
+          Create New Blog
         </button>
       </div>
 
-      {showForm && (
-        <div className="mb-12 max-w-2xl mx-auto">
-          <BlogForm onSuccess={() => {
-            setShowForm(false);
-            router.refresh();
-          }} />
-        </div>
-      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentBlogs.length > 0 ? (

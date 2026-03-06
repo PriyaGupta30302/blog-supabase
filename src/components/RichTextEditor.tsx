@@ -15,7 +15,7 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { TableKit } from '@tiptap/extension-table';
 import { common, createLowlight } from 'lowlight';
 import { useCallback, useRef, useState, useEffect } from 'react';
-import './editor-styles.css';
+// import './editor-styles.css'; // Moved to globals.css to fix styling issues
 
 const lowlight = createLowlight(common);
 
