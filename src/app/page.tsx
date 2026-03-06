@@ -37,7 +37,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -45,7 +45,7 @@ export default function Home() {
           <h1 className="text-5xl font-extrabold text-foreground mb-4 tracking-tight">
             Latest <span className="text-primary">Stories</span>
           </h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+          <p className="text-xl text-foreground/60 max-w-2xl mx-auto">
             Discover the latest thoughts, ideas, and stories from our community.
           </p> 
         </div>
@@ -54,9 +54,9 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 h-64 rounded-3xl mb-4"></div>
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="bg-muted h-64 rounded-3xl mb-4"></div>
+                <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-muted rounded w-1/2"></div>
               </div>
             ))}
           </div>
@@ -74,8 +74,8 @@ export default function Home() {
                       />
                     </div>
                   ) : (
-                    <div className="h-48 bg-gradient-to-br from-primary-light to-primary/5 flex items-center justify-center">
-                      <span className="text-primary-light text-5xl font-bold">{blog.title[0]}</span>
+                    <div className="h-48 bg-primary-light flex items-center justify-center">
+                      <span className="text-primary text-5xl font-bold">{blog.title[0]}</span>
                     </div>
                   )}
                 </Link>
@@ -113,9 +113,9 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-400">No stories found</h2>
-            <p className="text-gray-500 mt-2">Try publishing something amazing from the dashboard!</p>
+          <div className="text-center py-24 bg-muted rounded-3xl border-2 border-dashed border-card-border">
+            <h2 className="text-2xl font-bold text-foreground/30">No stories found</h2>
+            <p className="text-foreground/40 mt-2">Try publishing something amazing from the dashboard!</p>
           </div>
         )}
       </main>

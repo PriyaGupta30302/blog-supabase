@@ -43,8 +43,8 @@ export default function ThemeSwitcher() {
             className="fixed inset-0 z-20" 
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-30 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="px-4 py-2 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 dark:border-gray-700 mb-2">
+          <div className="absolute right-0 mt-2 w-48 bg-card rounded-2xl shadow-xl border border-card-border z-30 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="px-4 py-2 text-xs font-bold text-foreground/30 uppercase tracking-widest border-b border-card-border mb-2">
               Select Theme
             </div>
             {themes.map((t) => (
@@ -54,12 +54,12 @@ export default function ThemeSwitcher() {
                   setTheme(t.id);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
-                  theme === t.id ? 'text-primary' : 'text-gray-600 dark:text-gray-300'
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted ${
+                  theme === t.id ? 'text-primary' : 'text-foreground/60'
                 }`}
               >
                 <div 
-                  className="w-4 h-4 rounded-full border border-gray-100 dark:border-gray-600 shadow-sm shrink-0"
+                  className="w-4 h-4 rounded-full border border-card-border shadow-sm shrink-0"
                   style={{ backgroundColor: t.color }}
                 />
                 {t.name}
