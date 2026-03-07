@@ -18,7 +18,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   }
 
   // Sanitize the HTML content for safe rendering
-  const sanitizedContent = DOMPurify.sanitize(blog.description);
+  const sanitizedContent = blog.description ? DOMPurify.sanitize(blog.description) : '';
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
