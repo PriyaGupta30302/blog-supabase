@@ -1,12 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import DOMPurify from "isomorphic-dompurify";
 
 interface BlogContentProps {
   htmlContent: string;
 }
 
 export default function BlogContent({ htmlContent }: BlogContentProps) {
+  const sanitizedContent = useMemo(() => {
+    return DOMPurify.sanitize(htmlContent);
+  }, [htmlContent]);
+
   return (
     <article 
       className="prose prose-lg dark:prose-invert max-w-none break-words overflow-x-hidden
@@ -19,7 +24,7 @@ export default function BlogContent({ htmlContent }: BlogContentProps) {
         prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
         prose-li:text-foreground/80 prose-li:my-2
         prose-hr:border-card-border prose-hr:my-8"
-      dangerouslySetInnerHTML={{ __html: htmlContent }} 
+      dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
     />
   );
 }

@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
-import DOMPurify from "isomorphic-dompurify";
 import BlogContent from "@/components/BlogContent";
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -16,9 +15,6 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   if (error || !blog) {
     notFound();
   }
-
-  // Sanitize the HTML content for safe rendering
-  const sanitizedContent = blog.description ? DOMPurify.sanitize(blog.description) : '';
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -71,7 +67,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
         {/* Blog Content */}
         <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg border border-card-border mb-12">
-          <BlogContent htmlContent={sanitizedContent} />
+          <BlogContent htmlContent={blog.description || ''} />
         </div>
 
         {/* Footer Info */}
