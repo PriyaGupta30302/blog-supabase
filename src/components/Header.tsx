@@ -31,9 +31,10 @@ export default function Header() {
               {/* Auth buttons hidden from public view as per user request */}
             </SignedOut>
             
-            <div className="border-l border-gray-100 dark:border-gray-700 pl-4">
-              <ThemeSwitcher />
-            </div>
+            {isAdmin && (
+              <div className="border-l border-gray-100 dark:border-gray-700 h-6 mx-2" />
+            )}
+            <ThemeSwitcher />
           </nav>
         </div>
       </div>
