@@ -8,9 +8,11 @@
   --primary-hover: #1d4ed8;
   --primary-light: #eff6ff;
   --primary-foreground: #ffffff;
-  --background: #ffffff;
+    /* --background: #f9fafb; */
+  --background: #f1f5f9;
   --foreground: #111827;
-  --card-bg: #ffffff;
+  --card-bg: #f1f5f9;
+  /* --card-bg: #f9fafb; */
   --card-border: #f3f4f6;
   --muted: #f9fafb;
 }
