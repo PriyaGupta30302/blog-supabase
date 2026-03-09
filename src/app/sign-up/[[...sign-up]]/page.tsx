@@ -3,9 +3,12 @@
 import * as React from 'react';
 import { useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 export default function SignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
   const [emailAddress, setEmailAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [pendingVerification, setPendingVerification] = React.useState(false);
@@ -24,6 +27,8 @@ export default function SignUpPage() {
 
     try {
       await signUp.create({
+        firstName,
+        lastName,
         emailAddress,
         password,
       });
@@ -49,14 +54,12 @@ export default function SignUpPage() {
       });
 
       if (completeSignUp.status !== 'complete') {
-        /*  investigate the response, to see if there was an error
-         or if the user needs to complete more steps.*/
         console.log(JSON.stringify(completeSignUp, null, 2));
       }
 
       if (completeSignUp.status === 'complete') {
         await setActive({ session: completeSignUp.createdSessionId });
-        router.push('/');
+        router.push('/sign-in');
       }
     } catch (err: any) {
       setError(err.errors[0].message);
@@ -64,77 +67,112 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-vh-100 bg-gray-50 p-6">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 border border-gray-200">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          {pendingVerification ? 'Verify your email' : 'Create an Account'}
-        </h1>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-            {error}
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      <Header />
+      <div className="flex flex-col items-center justify-center py-20 px-4">
+        <div className="w-full max-w-xl bg-card rounded-3xl shadow-2xl p-10 border border-card-border transition-all animate-in fade-in zoom-in duration-500">
+          <div className="mb-10 text-center">
+             <h1 className="text-4xl font-black text-foreground tracking-tight mb-2">
+               {pendingVerification ? 'Verify Your <span className="text-primary">Email</span>' : 'Create <span className="text-primary">Account</span>'}
+             </h1>
+             <p className="text-foreground/50 font-medium italic">
+               {pendingVerification ? 'Check your inbox for the verification code' : 'Join our creative community today'}
+             </p>
           </div>
-        )}
 
-        {!pendingVerification ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-              <input
-                type="email"
-                value={emailAddress}
-                onChange={(e) => setEmailAddress(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
-                placeholder="you@example.com"
-                required
-              />
+          {error && (
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-sm font-medium flex items-center animate-shake">
+              <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {error}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            <div id="clerk-captcha" className="mb-4"></div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200"
-            >
-              Sign Up
-            </button>
-            <div className="text-center mt-4">
-              <span className="text-gray-600 text-sm">Already have an account? </span>
-              <a href="/sign-in" className="text-blue-600 hover:underline text-sm font-medium">Log In</a>
-            </div>
-          </form>
-        ) : (
-          <form onSubmit={onPressVerify} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
-              <input
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 text-center text-2xl tracking-widest font-mono"
-                placeholder="123456"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200"
-            >
-              Verify OTP
-            </button>
-            <p className="text-center text-sm text-gray-500 mt-2">
-              A verification code has been sent to your email.
-            </p>
-          </form>
-        )}
+          )}
+
+          {!pendingVerification ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-bold text-foreground/70 mb-2 ml-1">First Name</label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
+                    placeholder="Jane"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-foreground/70 mb-2 ml-1">Last Name</label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
+                    placeholder="Doe"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-foreground/70 mb-2 ml-1">Email Address</label>
+                <input
+                  type="email"
+                  value={emailAddress}
+                  onChange={(e) => setEmailAddress(e.target.value)}
+                  className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
+                  placeholder="jane.doe@example.com"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-foreground/70 mb-2 ml-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
+                  placeholder="••••••••••••"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+              >
+                Sign Up
+              </button>
+              <div className="text-center mt-8 pt-6 border-t border-card-border">
+                <span className="text-foreground/40 text-sm font-medium">Already have an account? </span>
+                <a href="/sign-in" className="text-primary hover:text-primary-hover hover:underline text-sm font-bold transition-colors">Log In</a>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={onPressVerify} className="space-y-6">
+              <div>
+                <label className="block text-sm font-bold text-foreground/70 mb-4 text-center">Enter Verification Code</label>
+                <input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  className="w-full p-6 bg-muted border-2 border-card-border rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary focus:outline-none text-foreground text-center text-4xl tracking-[1em] font-black transition-all placeholder:opacity-10"
+                  placeholder="000000"
+                  required
+                  autoFocus
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+              >
+                Verify OTP
+              </button>
+              <p className="text-center text-sm text-foreground/40 font-medium mt-4">
+                A verification code has been sent to your email.
+              </p>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

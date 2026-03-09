@@ -1,29 +1,5 @@
-import Header from "@/components/Header";
-import { currentUser } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabase";
-import ClientDashboard from "@/components/ClientDashboard";
+import { redirect } from 'next/navigation';
 
-export default async function DashboardPage() {
-  const user = await currentUser();
-  
-  // Fetch blogs from Supabase
-  const { data: blogs, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300"> 
-      <Header />
-      <ClientDashboard 
-        user={user ? {
-          id: user.id,
-          firstName: user.firstName,
-          username: user.username,
-          publicMetadata: user.publicMetadata,
-        } : null} 
-        initialBlogs={blogs || []} 
-      />
-    </div>
-  );
+export default function DashboardPage() {
+  redirect('/admin');
 }

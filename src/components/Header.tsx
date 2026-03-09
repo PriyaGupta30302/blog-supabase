@@ -19,12 +19,15 @@ export default function Header() {
           </div>
           
           <nav className="flex items-center space-x-6">
+            {isLoaded && (
+              <Link 
+                href="/admin" 
+                className="bg-primary text-primary-foreground px-5 py-2 rounded-full font-bold text-sm hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
+              >
+                Dashboard
+              </Link>
+            )}
             <SignedIn>
-              {isLoaded && isAdmin && (
-                <Link href="/dashboard" className="text-foreground/80 hover:text-primary font-medium text-sm transition-colors">
-                  Dashboard
-                </Link>
-              )}
               <UserButton afterSignOutUrl="/" />
             </SignedIn>
             <SignedOut>

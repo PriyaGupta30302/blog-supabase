@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import AdminSkeleton from "@/components/AdminSkeleton";
 
 export default function AdminPage() {
   const { user, isLoaded: userLoaded } = useUser();
+  const router = useRouter();
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -47,6 +49,11 @@ export default function AdminPage() {
     return <PageLoader />;
   }
 
+  if (userLoaded && !user) {
+    router.push('/sign-up');
+    return <PageLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <Header />
@@ -57,7 +64,7 @@ export default function AdminPage() {
             <p className="text-foreground/50 mt-2 font-medium">Manage all blog posts, edits, and deletions.</p>
           </div>
           <Link 
-            href="/dashboard/create" 
+            href="/admin/create" 
             className="flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition shadow-lg hover:shadow-primary/20"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
