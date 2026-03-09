@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import BlogCardSkeleton from '@/components/BlogCardSkeleton';
+import PageLoader from '@/components/PageLoader';
 
 import { stripHtml, formatDate } from '@/lib/text-utils';
 
@@ -23,8 +24,14 @@ interface Blog {
 export default function Home() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
+    // Show PageLoader for at least 800ms
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
+
     async function fetchBlogs() {
       const { data, error } = await supabase
         .from('blogs')
@@ -35,7 +42,13 @@ export default function Home() {
       setLoading(false);
     }
     fetchBlogs();
+
+    return () => clearTimeout(timer);
   }, []);
+
+  if (initialLoading) {
+    return <PageLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
