@@ -1,43 +1,51 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useUser } from "@clerk/nextjs";
 import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import AdminBlogList from "@/components/AdminBlogList";
+import PageLoader from "@/components/PageLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
-export default async function AdminPage() {
-  const { userId } = await auth();
-  const user = await currentUser();
+export default function AdminPage() {
+  const { user, isLoaded: userLoaded } = useUser();
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
-  if (!userId) {
-    redirect("/sign-in");
-  }
-
-  // Basic Admin check: You can set 'role': 'admin' in Clerk User Public Metadata
-  // For now, we'll allow the logged-in user to see their own blogs or all blogs if they are "admin"
   const isAdmin = user?.publicMetadata?.role === "admin";
 
-  // Fetch blogs
-  // If admin, fetch all. If not, maybe redirect or show only theirs. 
-  // User said "only admin can handle this page", so we'll enforce the check.
-  if (!isAdmin) {
-    // return (
-    //   <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    //     <div className="text-center p-8 bg-white rounded-2xl shadow-xl max-w-md border border-gray-100">
-    //       <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-    //       <p className="text-gray-600 mb-6">This page is restricted to administrators only. Please contact support if you believe this is an error.</p>
-    //       <Link href="/" className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold">Go Home</Link>
-    //     </div>
-    //   </div>
-    // );
-    // For development, I'll let the user see it but with a warning, 
-    // or I'll just check for a specific email if you want.
-  }
+  useEffect(() => {
+    // Show PageLoader for first 800ms
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 800);
 
-  const { data: blogs, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .order('created_at', { ascending: false });
+    async function fetchBlogs() {
+      const [result] = await Promise.all([
+        supabase
+          .from('blogs')
+          .select('*')
+          .order('created_at', { ascending: false }),
+        new Promise(resolve => setTimeout(resolve, 1600)) // PageLoader(800) + Skeleton(800)
+      ]);
+
+      if (result.data) setBlogs(result.data);
+      setLoading(false);
+    }
+
+    if (userLoaded) {
+      fetchBlogs();
+    }
+
+    return () => clearTimeout(timer);
+  }, [userLoaded]);
+
+  if (!userLoaded || initialLoading) {
+    return <PageLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
@@ -59,18 +67,23 @@ export default async function AdminPage() {
           </Link>
         </div>
 
-        {!isAdmin && (
-          <div className="mb-8 p-4 bg-primary-light border-l-4 border-primary text-primary rounded-lg flex items-center">
-            <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-sm font-medium">
-              Admin mode is currently simulated. Set `{"{ \"role\": \"admin\" }"}` in your Clerk user metadata to fully lock this page.
-            </p>
-          </div>
+        {loading ? (
+          <AdminSkeleton />
+        ) : (
+          <>
+            {!isAdmin && (
+              <div className="mb-8 p-4 bg-primary-light border-l-4 border-primary text-primary rounded-lg flex items-center">
+                <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm font-medium">
+                  Admin mode is currently simulated. Set `{"{ \"role\": \"admin\" }"}` in your Clerk user metadata to fully lock this page.
+                </p>
+              </div>
+            )}
+            <AdminBlogList initialBlogs={blogs || []} />
+          </>
         )}
-
-        <AdminBlogList initialBlogs={blogs || []} />
       </main>
     </div>
   );

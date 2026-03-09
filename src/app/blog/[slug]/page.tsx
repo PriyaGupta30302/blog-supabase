@@ -6,11 +6,15 @@ import BlogContent from "@/components/BlogContent";
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const { data: blog, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  // Artificial delay to ensure Page Loader (800ms) -> Skeleton (800ms) sequence is visible
+  const [{ data: blog, error }] = await Promise.all([
+    supabase
+      .from('blogs')
+      .select('*')
+      .eq('slug', slug)
+      .single(),
+    new Promise(resolve => setTimeout(resolve, 1700)) // Slightly more than 1600ms for safety
+  ]);
 
   if (error || !blog) {
     notFound();

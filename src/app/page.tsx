@@ -33,12 +33,16 @@ export default function Home() {
     }, 800);
 
     async function fetchBlogs() {
-      const { data, error } = await supabase
-        .from('blogs')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Ensure skeletons are visible after page loader
+      const [result] = await Promise.all([
+        supabase
+          .from('blogs')
+          .select('*')
+          .order('created_at', { ascending: false }),
+        new Promise(resolve => setTimeout(resolve, 1600)) // PageLoader(800) + Skeleton(800)
+      ]);
 
-      if (data) setBlogs(data);
+      if (result.data) setBlogs(result.data);
       setLoading(false);
     }
     fetchBlogs();
