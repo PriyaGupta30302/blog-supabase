@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import BlogCardSkeleton from '@/components/BlogCardSkeleton';
 
 import { stripHtml, formatDate } from '@/lib/text-utils';
 
@@ -52,12 +53,8 @@ export default function Home() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-muted h-64 rounded-3xl mb-4"></div>
-                <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-muted rounded w-1/2"></div>
-              </div>
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <BlogCardSkeleton key={i} />
             ))}
           </div>
         ) : blogs.length > 0 ? (
