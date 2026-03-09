@@ -89,7 +89,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                   {formatDate(blog.created_at)}
                 </td>
                 <td className="px-8 py-6">
-                  <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition duration-200">
+                  <div className="flex items-center space-x-3">
                     <Link 
                       href={`/blog/${blog.slug}`}
                       className="inline-flex items-center px-4 py-2 bg-primary-light text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium text-sm group"
