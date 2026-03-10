@@ -7,7 +7,11 @@ export default clerkMiddleware(async (auth, request) => {
   if (isAdminRoute(request)) {
     const { sessionClaims } = await auth();
     const role = (sessionClaims as any)?.metadata?.role;
-    if (role !== 'admin') {
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+    const userEmail = (sessionClaims as any)?.email; // Note: Ensure 'email' is in session claims via Clerk dashboard
+
+    // Allow access if user has admin role OR their email matches the admin email
+    if (role !== 'admin' && !(userEmail && userEmail === adminEmail)) {
       const url = new URL('/admin', request.url);
       return Response.redirect(url);
     }
