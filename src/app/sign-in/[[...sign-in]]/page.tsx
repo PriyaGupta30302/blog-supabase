@@ -1,25 +1,27 @@
 'use client';
 
 import * as React from 'react';
-import { useSignIn } from '@clerk/nextjs';
+import { useSignIn, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 
 export default function SignInPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { isSignedIn, isLoaded: userLoaded } = useUser();
   const [emailAddress, setEmailAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
   React.useEffect(() => {
-    if (isLoaded && signIn.status === 'complete') {
+    if (userLoaded && isSignedIn) {
       router.push('/admin');
     }
-  }, [isLoaded, signIn, router]);
+  }, [userLoaded, isSignedIn, router]);
 
-  if (!isLoaded) {
+  if (!isLoaded || !userLoaded) {
     return null;
   }
 
@@ -27,6 +29,7 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const result = await signIn.create({
@@ -38,10 +41,14 @@ export default function SignInPage() {
         await setActive({ session: result.createdSessionId });
         router.push('/admin');
       } else {
-        console.log(result);
+        // Handle other statuses (e.g., MFA) or show a generic message
+        console.log('SignIn result:', result);
+        setError('Sign in requires additional steps or is incomplete.');
       }
     } catch (err: any) {
-      setError(err.errors[0].message);
+      setError(err.errors?.[0]?.message || 'An error occurred during sign in.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,9 +122,18 @@ export default function SignInPage() {
             </div>
             <button
               type="submit"
-              className="w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+              disabled={loading}
+              className={`w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Log In
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Logging In...
+                </span>
+              ) : 'Log In'}
             </button>
             <div className="text-center mt-8 pt-6 border-t border-card-border">
               <span className="text-foreground/40 text-sm font-medium">Don't have an account? </span>
