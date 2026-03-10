@@ -48,7 +48,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (userLoaded && !user) {
-      router.push('/sign-up');
+      router.push('/sign-in');
     }
   }, [userLoaded, user, router]);
 
