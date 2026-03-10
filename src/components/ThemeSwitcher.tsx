@@ -32,7 +32,7 @@ export default function ThemeSwitcher() {
           />
           <div className="absolute inset-0 rounded-full animate-ping bg-primary/20 scale-125 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
-        <span className="text-sm font-semibold text-foreground/70 group-hover:text-primary transition-colors">
+        <span className="text-sm font-semibold text-foreground/70 group-hover:text-primary transition-colors hidden sm:inline">
           {activeTheme?.name}
         </span>
         <svg 

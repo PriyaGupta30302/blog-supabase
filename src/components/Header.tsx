@@ -12,17 +12,17 @@ export default function Header() {
     <header className="bg-background border-b border-card-border sticky top-0 z-10 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-primary tracking-tight">
+          <div className="flex items-center flex-shrink-0">
+            <Link href="/" className="text-xl sm:text-2xl font-bold text-primary tracking-tight">
               BlogApp
             </Link>
           </div>
           
-          <nav className="flex items-center space-x-6">
+          <nav className="flex items-center space-x-2 sm:space-x-6">
             {isLoaded && (
               <Link 
                 href="/admin" 
-                className="bg-primary text-primary-foreground px-5 py-2 rounded-full font-bold text-sm hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
+                className="bg-primary text-primary-foreground px-3 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
               >
                 Dashboard
               </Link>

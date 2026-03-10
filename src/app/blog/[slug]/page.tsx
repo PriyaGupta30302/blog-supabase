@@ -36,7 +36,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         {/* Hero Section */}
         <header className="mb-12">
           {blog.tags && blog.tags.length > 0 && (
-            <div className="flex gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4">
               {blog.tags.map((tag: string) => (
                 <span key={tag} className="text-xs font-bold uppercase tracking-widest text-primary bg-primary-light px-2 py-1 rounded">
                   {tag}
@@ -44,7 +44,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
               ))}
             </div>
           )}
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-foreground mb-6 leading-tight">
             {blog.title}
           </h1>
           <div className="flex items-center space-x-4 text-foreground/60">

@@ -98,6 +98,16 @@
   background-size: 200% 100%;
 }
 
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 1440px) {
+  html {
+    font-size: clamp(14px, 13.43px + 0.178vw, 16px);
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
