@@ -38,6 +38,7 @@ export default function SignUpPage() {
   // Handle submission of basic signup form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLoaded || !signUp) return;
     setError('');
     setLoading(true);
 
@@ -64,6 +65,7 @@ export default function SignUpPage() {
   // Handle submission of verification form
   const onPressVerify = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLoaded || !signUp) return;
     setError('');
     setLoading(true);
 

@@ -58,6 +58,7 @@ export default function SignInPage() {
   // Handle submission of basic signin form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLoaded || !signIn) return;
     setError('');
     setLoading(true);
 
@@ -92,6 +93,7 @@ export default function SignInPage() {
   // Handle forgot password flow
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLoaded || !signIn) return;
     setError('');
     setLoading(true);
 
