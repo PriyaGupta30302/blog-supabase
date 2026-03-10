@@ -11,10 +11,17 @@ export default function SignUpPage() {
   const [lastName, setLastName] = React.useState('');
   const [emailAddress, setEmailAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [showPassword, setShowPassword] = React.useState(false);
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState('');
   const [error, setError] = React.useState('');
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (isLoaded && signUp.status === 'complete') {
+      router.push('/admin');
+    }
+  }, [isLoaded, signUp, router]);
 
   if (!isLoaded) {
     return null;
@@ -59,7 +66,7 @@ export default function SignUpPage() {
 
       if (completeSignUp.status === 'complete') {
         await setActive({ session: completeSignUp.createdSessionId });
-        router.push('/sign-in');
+        router.push('/admin');
       }
     } catch (err: any) {
       setError(err.errors[0].message);
@@ -73,11 +80,17 @@ export default function SignUpPage() {
         <div className="w-full max-w-xl bg-card rounded-3xl shadow-2xl p-10 border border-card-border transition-all animate-in fade-in zoom-in duration-500">
           <div className="mb-10 text-center">
              <h1 className="text-4xl font-black text-foreground tracking-tight mb-2">
-               {pendingVerification ? 'Verify Your <span className="text-primary">Email</span>' : 'Create <span className="text-primary">Account</span>'}
+               {pendingVerification ? (
+                 <>Verify Your <span className="text-primary">Email</span></>
+               ) : (
+                 <>Create <span className="text-primary">Account</span></>
+               )}
              </h1>
              <p className="text-foreground/50 font-medium italic">
                {pendingVerification ? 'Check your inbox for the verification code' : 'Join our creative community today'}
              </p>
+             {/* Required for Clerk Smart CAPTCHA */}
+             <div id="clerk-captcha" className="mt-4"></div>
           </div>
 
           {error && (
@@ -126,16 +139,34 @@ export default function SignUpPage() {
                   required
                 />
               </div>
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-bold text-foreground/70 mb-2 ml-1">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
-                  placeholder="••••••••••••"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20 pr-12"
+                    placeholder="••••••••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/30 hover:text-primary transition-colors p-1"
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.222 0 2.391.269 3.44.75m4.778 3.393A10.01 10.01 0 0121.542 12c-1.274 4.057-5.064 7-9.542 7-1.053 0-2.062-.18-3-.512m14.062-12.062l-14.062 14.062M9 9a3 3 0 005.142 2.142M12 9v2.142" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"

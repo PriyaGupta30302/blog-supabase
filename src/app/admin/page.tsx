@@ -9,6 +9,7 @@ import Link from "next/link";
 import AdminBlogList from "@/components/AdminBlogList";
 import PageLoader from "@/components/PageLoader";
 import AdminSkeleton from "@/components/AdminSkeleton";
+import { isAdmin as checkAdmin } from "@/lib/auth-client-utils";
 
 export default function AdminPage() {
   const { user, isLoaded: userLoaded } = useUser();
@@ -17,7 +18,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  const isAdmin = user?.publicMetadata?.role === "admin";
+  const isAdmin = checkAdmin(user);
 
   useEffect(() => {
     // Show PageLoader for first 800ms
@@ -45,12 +46,13 @@ export default function AdminPage() {
     return () => clearTimeout(timer);
   }, [userLoaded]);
 
-  if (!userLoaded || initialLoading) {
-    return <PageLoader />;
-  }
+  useEffect(() => {
+    if (userLoaded && !user) {
+      router.push('/sign-up');
+    }
+  }, [userLoaded, user, router]);
 
-  if (userLoaded && !user) {
-    router.push('/sign-up');
+  if (!userLoaded || initialLoading || (userLoaded && !user)) {
     return <PageLoader />;
   }
 
@@ -63,15 +65,17 @@ export default function AdminPage() {
             <h1 className="text-4xl font-black text-foreground tracking-tight">Admin <span className="text-primary">Portal</span></h1>
             <p className="text-foreground/50 mt-2 font-medium">Manage all blog posts, edits, and deletions.</p>
           </div>
-          <Link 
-            href="/admin/create" 
-            className="flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition shadow-lg hover:shadow-primary/20 w-full sm:w-auto justify-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
-            New Blog
-          </Link>
+          {isAdmin && (
+            <Link 
+              href="/admin/create" 
+              className="flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition shadow-lg hover:shadow-primary/20 w-full sm:w-auto justify-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+              New Blog
+            </Link>
+          )}
         </div>
 
         {loading ? (

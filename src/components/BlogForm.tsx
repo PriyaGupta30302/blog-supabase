@@ -7,11 +7,13 @@ import { supabase } from '@/lib/supabase';
 import { uploadBlogImage } from '@/lib/storage';
 import { convertToWebP } from '@/lib/image-utils';
 import { useRouter } from 'next/navigation';
-import { archiveBlogImageAction } from '@/app/actions';
+import { archiveBlogImageAction, saveBlogAction } from '@/app/actions';
 import RichTextEditor from './RichTextEditor';
+import { isAdmin } from '@/lib/auth-client-utils';
 
 export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () => void, initialData?: any }) {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  const isUserAdmin = isAdmin(user);
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.description || initialData?.content || '');
   const [authorName, setAuthorName] = useState(initialData?.author_name || '');
@@ -28,7 +30,10 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !isUserAdmin) {
+      setError('Unauthorized: Only admins can save blog posts.');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -44,7 +49,6 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             await archiveBlogImageAction(initialData.img);
           } catch (archiveError) {
             console.error('Failed to archive old image:', archiveError);
-            // We continue even if archiving fails to ensure the update proceeds
           }
         }
         const webpFile = await convertToWebP(imageFile);
@@ -66,21 +70,9 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
         slug: slug,
       };
 
-      let result;
-      if (initialData?.id) {
-        // Update existing blog
-        result = await supabase
-          .from('blogs')
-          .update(blogData)
-          .eq('id', initialData.id);
-      } else {
-        // Insert new blog
-        result = await supabase
-          .from('blogs')
-          .insert([blogData]);
-      }
+      const result = await saveBlogAction(blogData, initialData?.id);
 
-      if (result.error) throw result.error;
+      if (!result.success) throw new Error(result.error);
 
       if (!initialData) {
         setTitle('');
