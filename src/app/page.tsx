@@ -27,26 +27,23 @@ export default function Home() {
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
-    // Show PageLoader for at least 800ms
+    async function fetchData() {
+      const { data } = await supabase
+        .from('blogs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (data) setBlogs(data);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Initial Page Loader timer
     const timer = setTimeout(() => {
       setInitialLoading(false);
     }, 800);
-
-    async function fetchBlogs() {
-      // Ensure skeletons are visible after page loader
-      const [result] = await Promise.all([
-        supabase
-          .from('blogs')
-          .select('*')
-          .order('created_at', { ascending: false }),
-        new Promise(resolve => setTimeout(resolve, 1600)) // PageLoader(800) + Skeleton(800)
-      ]);
-
-      if (result.data) setBlogs(result.data);
-      setLoading(false);
-    }
-    fetchBlogs();
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -67,6 +64,8 @@ export default function Home() {
             Discover the latest thoughts, ideas, and stories from our community.
           </p> 
         </div>
+
+        {/* Blog Grid */}
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

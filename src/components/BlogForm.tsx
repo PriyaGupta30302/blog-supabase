@@ -7,9 +7,10 @@ import { supabase } from '@/lib/supabase';
 import { uploadBlogImage } from '@/lib/storage';
 import { convertToWebP } from '@/lib/image-utils';
 import { useRouter } from 'next/navigation';
-import { archiveBlogImageAction, saveBlogAction } from '@/app/actions';
+import { archiveBlogImageAction, saveBlogAction, getCategories } from '@/app/actions';
 import RichTextEditor from './RichTextEditor';
 import { isAdmin } from '@/lib/auth-client-utils';
+import { useEffect } from 'react';
 
 export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () => void, initialData?: any }) {
   const { user, isLoaded } = useUser();
@@ -20,9 +21,22 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
   const [tags, setTags] = useState(initialData?.tags?.join(', ') || '');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState(initialData?.img || '');
+  const [categoryId, setCategoryId] = useState(initialData?.category_id || '');
+  const [status, setStatus] = useState(initialData?.status || 'draft');
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    async function loadCategories() {
+      const result = await getCategories();
+      if (result.success && result.data) {
+        setCategories(result.data);
+      }
+    }
+    loadCategories();
+  }, []);
 
   const handleContentChange = (data: { html: string }) => {
     setContent(data.html);
@@ -68,6 +82,8 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
         author_name: authorName,
         tags: tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag !== ''),
         slug: slug,
+        category_id: categoryId || null,
+        status: status,
       };
 
       const result = await saveBlogAction(blogData, initialData?.id);
@@ -141,6 +157,46 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             placeholder="Your name or pen name"
             required
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">Category</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all appearance-none"
+          >
+            <option value="">Uncategorized</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-foreground/70 mb-2">Publishing Status</label>
+          <div className="flex bg-muted p-1 rounded-xl w-fit">
+            <button
+              type="button"
+              onClick={() => setStatus('draft')}
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                status === 'draft' ? 'bg-background text-primary shadow-sm' : 'text-foreground/40'
+              }`}
+            >
+              Draft
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatus('published')}
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                status === 'published' ? 'bg-background text-primary shadow-sm' : 'text-foreground/40'
+              }`}
+            >
+              Published
+            </button>
+          </div>
         </div>
       </div>
 
