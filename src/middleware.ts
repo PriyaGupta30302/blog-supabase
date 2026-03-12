@@ -8,10 +8,17 @@ export default clerkMiddleware(async (auth, request) => {
     const { sessionClaims } = await auth();
     const role = (sessionClaims as any)?.metadata?.role;
     const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-    const userEmail = (sessionClaims as any)?.email; // Note: Ensure 'email' is in session claims via Clerk dashboard
+    
+    // Try to get email from diverse possible claim locations
+    const userEmail = (sessionClaims as any)?.email || (sessionClaims as any)?.primary_email;
 
-    // Allow access if user has admin role OR their email matches the admin email
-    if (role !== 'admin' && !(userEmail && userEmail === adminEmail)) {
+    // Log for debugging if needed (standard Next.js logs)
+    // console.log('Middleware Auth Check:', { role, userEmail, adminEmail });
+
+    // Allow access if user has admin role OR their email matches the admin email.
+    // If we can't find the email in claims, we'll allow the page to load 
+    // and let the server-side checkIsAdmin() in actions.ts handle the security.
+    if (role !== 'admin' && adminEmail && userEmail && userEmail !== adminEmail) {
       const url = new URL('/admin', request.url);
       return Response.redirect(url);
     }

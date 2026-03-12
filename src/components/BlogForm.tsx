@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
@@ -8,13 +8,19 @@ import { uploadBlogImage } from '@/lib/storage';
 import { convertToWebP } from '@/lib/image-utils';
 import { useRouter } from 'next/navigation';
 import { archiveBlogImageAction, saveBlogAction, getCategories } from '@/app/actions';
-import RichTextEditor from './RichTextEditor';
 import { isAdmin } from '@/lib/auth-client-utils';
-import { useEffect } from 'react';
+const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-muted animate-pulse rounded-2xl flex items-center justify-center text-foreground/20 font-medium">Loading Editor...</div>
+});
 
 export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () => void, initialData?: any }) {
   const { user, isLoaded } = useUser();
   const isUserAdmin = isAdmin(user);
+  
+  if (!isLoaded) {
+    return <div className="flex items-center justify-center p-12 bg-card rounded-2xl border border-card-border"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div></div>;
+  }
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.description || initialData?.content || '');
   const [authorName, setAuthorName] = useState(initialData?.author_name || '');

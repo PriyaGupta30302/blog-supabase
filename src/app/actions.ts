@@ -320,9 +320,28 @@ export async function createCategory(name: string) {
 
     if (error) throw error;
     revalidatePath('/admin');
+    revalidatePath('/');
     return { success: true, data };
   } catch (error: any) {
     console.error('Create category failed:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteCategory(id: string) {
+  try {
+    await checkIsAdmin();
+    const { error } = await adminSupabase
+      .from('categories')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    revalidatePath('/admin');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Delete category failed:', error);
     return { success: false, error: error.message };
   }
 }

@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import AdminBlogList from "@/components/AdminBlogList";
+import CategoryManager from "@/components/CategoryManager";
 import PageLoader from "@/components/PageLoader";
 import AdminSkeleton from "@/components/AdminSkeleton";
 import { isAdmin as checkAdmin } from "@/lib/auth-client-utils";
@@ -66,15 +67,17 @@ export default function AdminPage() {
             <p className="text-foreground/50 mt-2 font-medium">Manage all blog posts, edits, and deletions.</p>
           </div>
           {isAdmin && (
-            <Link 
-              href="/admin/create" 
+            <button 
+              onClick={() => {
+                router.push('/admin/create');
+              }}
               className="flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-hover transition shadow-lg hover:shadow-primary/20 w-full sm:w-auto justify-center"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               New Blog
-            </Link>
+            </button>
           )}
         </div>
 
@@ -92,7 +95,14 @@ export default function AdminPage() {
                 </p>
               </div>
             )}
-            <AdminBlogList initialBlogs={blogs || []} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <AdminBlogList initialBlogs={blogs || []} />
+              </div>
+              <div className="lg:col-span-1">
+                <CategoryManager />
+              </div>
+            </div>
           </>
         )}
       </main>

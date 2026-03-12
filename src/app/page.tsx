@@ -23,21 +23,33 @@ interface Blog {
 
 export default function Home() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const { data } = await supabase
+      // 1. Fetch Categories
+      const { data: catData, error: catError } = await supabase.from('categories').select('*').order('name');
+      if (catData) setCategories(catData);
+
+      // 2. Fetch Blogs
+      let query = supabase
         .from('blogs')
         .select('*')
         .order('created_at', { ascending: false });
 
+      if (selectedCategory) {
+        query = query.eq('category_id', selectedCategory);
+      }
+
+      const { data, error } = await query;
       if (data) setBlogs(data);
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [selectedCategory]);
 
   useEffect(() => {
     // Initial Page Loader timer
@@ -63,6 +75,33 @@ export default function Home() {
           <p className="text-xl text-foreground/60 max-w-2xl mx-auto">
             Discover the latest thoughts, ideas, and stories from our community.
           </p> 
+        </div>
+
+        {/* Category Filter */}
+        <div className="mb-12 flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setSelectedCategory('')}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+              selectedCategory === '' 
+                ? 'bg-primary text-primary-foreground shadow-lg' 
+                : 'bg-card text-foreground/60 hover:bg-card-border'
+            }`}
+          >
+            All Topics
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                selectedCategory === cat.id 
+                  ? 'bg-primary text-primary-foreground shadow-lg' 
+                  : 'bg-card text-foreground/60 hover:bg-card-border'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
         </div>
 
         {/* Blog Grid */}
