@@ -8,12 +8,14 @@ export async function checkIsAdmin() {
   const { sessionClaims } = await auth();
   const user = await currentUser();
   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-  const userEmail = user?.emailAddresses?.[0]?.emailAddress;
   
-  // Check Clerk metadata for role: 'admin'
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress || (sessionClaims as any)?.email;
   const role = (sessionClaims as any)?.metadata?.role;
   
-  if (role !== 'admin' && !(userEmail && userEmail === adminEmail)) {
+  const hasAdminRole = role === 'admin';
+  const hasAdminEmail = !!(adminEmail && userEmail && userEmail.toLowerCase() === adminEmail.toLowerCase());
+  
+  if (!hasAdminRole && !hasAdminEmail) {
     throw new Error('Unauthorized: Admin access required');
   }
   
