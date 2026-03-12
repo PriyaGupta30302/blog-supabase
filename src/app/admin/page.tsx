@@ -95,13 +95,15 @@ export default function AdminPage() {
                 </p>
               </div>
             )}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
+            <div className={`grid grid-cols-1 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-8`}>
+              <div className={isAdmin ? 'lg:col-span-2' : 'lg:col-span-1'}>
                 <AdminBlogList initialBlogs={blogs || []} />
               </div>
-              <div className="lg:col-span-1">
-                <CategoryManager />
-              </div>
+              {isAdmin && (
+                <div className="lg:col-span-1">
+                  <CategoryManager />
+                </div>
+              )}
             </div>
           </>
         )}
