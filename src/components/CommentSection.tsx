@@ -24,35 +24,46 @@ export default function CommentSection({ blogId, initialComments }: CommentSecti
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
 
     setSubmitting(true);
+    setError('');
+
+    // Prepare optimistic comment
+    const localNewComment: Comment = {
+      id: 'temp-' + Math.random().toString(),
+      user_id: user.id,
+      user_name: user.fullName || user.username || 'Anonymous',
+      content: newComment,
+      created_at: new Date().toISOString()
+    };
+
+    // Optimistically add to list
+    setComments(prev => [localNewComment, ...prev]);
+    const originalContent = newComment;
+    setNewComment('');
+
     try {
       const result = await addCommentAction(
         blogId,
         user.id,
         user.fullName || user.username || 'Anonymous',
-        newComment
+        originalContent
       );
 
-      if (result.success) {
-        setNewComment('');
-        // For a better UX, we could refetch or optimistically update
-        // Here we'll just add it to the local state for immediate feedback
-        const localNewComment: Comment = {
-          id: Math.random().toString(), // Temp ID
-          user_id: user.id,
-          user_name: user.fullName || user.username || 'Anonymous',
-          content: newComment,
-          created_at: new Date().toISOString()
-        };
-        setComments([localNewComment, ...comments]);
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save comment');
       }
-    } catch (error) {
-      console.error('Failed to add comment:', error);
+    } catch (err: any) {
+      console.error('Failed to add comment:', err);
+      setError(err.message || 'Failed to add comment. Please try again.');
+      // Revert optimistic update
+      setComments(prev => prev.filter(c => c.id !== localNewComment.id));
+      setNewComment(originalContent);
     } finally {
       setSubmitting(false);
     }
@@ -77,6 +88,11 @@ export default function CommentSection({ blogId, initialComments }: CommentSecti
 
       {user ? (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm rounded-xl border border-red-200 dark:border-red-800">
+              {error}
+            </div>
+          )}
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}

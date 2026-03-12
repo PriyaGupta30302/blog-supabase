@@ -220,6 +220,7 @@ export async function addCommentAction(blogId: string, userId: string, userName:
       }]);
     
     if (error) throw error;
+    console.log(`Successfully added comment to blog ${blogId} for user ${userName}`);
     revalidatePath(`/blog/${blogId}`);
     return { success: true };
   } catch (error: any) {
