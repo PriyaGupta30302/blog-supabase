@@ -2,9 +2,14 @@ import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import BlogContent from "@/components/BlogContent";
+import { incrementBlogViews, getBlogLikesCount, checkIfUserLiked, getBlogComments } from "@/app/actions";
+import { auth } from "@clerk/nextjs/server";
+import LikeButton from "@/components/LikeButton";
+import CommentSection from "@/components/CommentSection";
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const { userId } = await auth();
 
   // Artificial delay to ensure Page Loader (800ms) -> Skeleton (800ms) sequence is visible
   const [{ data: blog, error }] = await Promise.all([
@@ -19,6 +24,16 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   if (error || !blog) {
     notFound();
   }
+
+  // Fetch likes & comments data
+  const [likesCount, isLiked, commentsResult] = await Promise.all([
+    getBlogLikesCount(blog.id),
+    userId ? checkIfUserLiked(blog.id, userId) : Promise.resolve(false),
+    getBlogComments(blog.id)
+  ]);
+
+  // Increment views
+  await incrementBlogViews(blog.id);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -47,14 +62,32 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           <h1 className="text-3xl sm:text-5xl font-extrabold text-foreground mb-6 leading-tight">
             {blog.title}
           </h1>
-          <div className="flex items-center space-x-4 text-foreground/60">
-            <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center font-bold text-primary">
-              {blog.author_name?.[0] || 'B'}
+          <div className="flex items-center justify-between flex-wrap gap-4 text-foreground/60">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center font-bold text-primary">
+                {blog.author_name?.[0] || 'B'}
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">{blog.author_name || 'Anonymous'}</p>
+                <div className="flex items-center space-x-2 text-sm">
+                  <p>{new Date(blog.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                  <span className="text-foreground/30">•</span>
+                  <p className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    {blog.views || 0} views
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-foreground">{blog.author_name || 'Anonymous'}</p>
-              <p className="text-sm">{new Date(blog.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
-            </div>
+
+            <LikeButton 
+              blogId={blog.id} 
+              initialLikes={likesCount} 
+              initialIsLiked={isLiked} 
+            />
           </div>
         </header>
 
@@ -73,6 +106,9 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg border border-card-border mb-12">
           <BlogContent htmlContent={blog.description || ''} />
         </div>
+
+        {/* Comment Section */}
+        <CommentSection blogId={blog.id} initialComments={(commentsResult.success ? commentsResult.data : []) as any} />
 
         {/* Footer Info */}
         <footer className="mt-16 pt-8 border-t border-card-border">

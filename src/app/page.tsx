@@ -23,30 +23,39 @@ interface Blog {
 
 export default function Home() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
-    // Show PageLoader for at least 800ms
+    async function fetchData() {
+      // 1. Fetch Categories
+      const { data: catData, error: catError } = await supabase.from('categories').select('*').order('name');
+      if (catData) setCategories(catData);
+
+      // 2. Fetch Blogs
+      let query = supabase
+        .from('blogs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (selectedCategory) {
+        query = query.eq('category_id', selectedCategory);
+      }
+
+      const { data, error } = await query;
+      if (data) setBlogs(data);
+      setLoading(false);
+    }
+    fetchData();
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    // Initial Page Loader timer
     const timer = setTimeout(() => {
       setInitialLoading(false);
     }, 800);
-
-    async function fetchBlogs() {
-      // Ensure skeletons are visible after page loader
-      const [result] = await Promise.all([
-        supabase
-          .from('blogs')
-          .select('*')
-          .order('created_at', { ascending: false }),
-        new Promise(resolve => setTimeout(resolve, 1600)) // PageLoader(800) + Skeleton(800)
-      ]);
-
-      if (result.data) setBlogs(result.data);
-      setLoading(false);
-    }
-    fetchBlogs();
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -67,6 +76,35 @@ export default function Home() {
             Discover the latest thoughts, ideas, and stories from our community.
           </p> 
         </div>
+
+        {/* Category Filter */}
+        <div className="mb-12 flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setSelectedCategory('')}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+              selectedCategory === '' 
+                ? 'bg-primary text-primary-foreground shadow-lg' 
+                : 'bg-card text-foreground/60 hover:bg-card-border'
+            }`}
+          >
+            All Topics
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                selectedCategory === cat.id 
+                  ? 'bg-primary text-primary-foreground shadow-lg' 
+                  : 'bg-card text-foreground/60 hover:bg-card-border'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Blog Grid */}
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
