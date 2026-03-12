@@ -15,8 +15,17 @@ export async function checkIsAdmin() {
   const hasAdminRole = role === 'admin';
   const hasAdminEmail = !!(adminEmail && userEmail && userEmail.toLowerCase() === adminEmail.toLowerCase());
   
+  console.log('Server Admin Check:', {
+    userEmail,
+    adminEmail,
+    role,
+    hasAdminRole,
+    hasAdminEmail,
+    match: hasAdminEmail || hasAdminRole
+  });
+
   if (!hasAdminRole && !hasAdminEmail) {
-    throw new Error('Unauthorized: Admin access required');
+    throw new Error(`Unauthorized: Admin access required. User: ${userEmail}`);
   }
   
   return true;

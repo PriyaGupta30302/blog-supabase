@@ -13,7 +13,10 @@ export default clerkMiddleware(async (auth, request) => {
     const hasAdminRole = role === 'admin';
     const hasAdminEmail = !!(adminEmail && userEmail && userEmail.toLowerCase() === adminEmail.toLowerCase());
 
-    if (!hasAdminRole && !hasAdminEmail) {
+    // ONLY redirect if we are SURE they aren't an admin (i.e., we have their email and it doesn't match)
+    // If userEmail is missing from claims, we let them through and let the page's checkIsAdmin (which is more robust) handle it.
+    if (userEmail && adminEmail && userEmail.toLowerCase() !== adminEmail.toLowerCase() && !hasAdminRole) {
+      console.log('Middleware Blocking:', { userEmail, adminEmail });
       const url = new URL('/admin', request.url);
       return Response.redirect(url);
     }

@@ -93,6 +93,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
       };
 
       const result = await saveBlogAction(blogData, initialData?.id);
+      console.log('Save action result:', result);
 
       if (!result.success) throw new Error(result.error);
 
