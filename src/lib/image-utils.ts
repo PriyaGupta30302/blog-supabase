@@ -49,3 +49,4 @@ export async function convertToWebP(file: File, quality: number = 0.8): Promise<
     reader.onerror = () => reject(new Error('File reading failed'));
   });
 }
+
