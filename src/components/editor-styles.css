@@ -159,6 +159,7 @@
   color: var(--foreground);
   font-size: 16px;
   line-height: 1.8;
+  max-width: none;
 }
 
 .text-editor-container .ProseMirror:focus {

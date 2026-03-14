@@ -67,3 +67,4 @@ export default function LikeButton({ blogId, initialLikes, initialIsLiked }: Lik
     </button>
   );
 }
+
