@@ -15,12 +15,22 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   let blog = null;
   try {
-    const { data } = await supabase
+    const { data: data1 } = await supabase
       .from('blogs')
       .select('title, description, content, img, author_name, tags')
-      .or(`slug.eq.${slug},slug.eq.${decodedSlug}`)
+      .eq('slug', decodedSlug)
       .maybeSingle();
-    blog = data;
+
+    blog = data1;
+
+    if (!blog && slug !== decodedSlug) {
+      const { data: data2 } = await supabase
+        .from('blogs')
+        .select('title, description, content, img, author_name, tags')
+        .eq('slug', slug)
+        .maybeSingle();
+      blog = data2;
+    }
   } catch (e) {
     console.error('Error loading blog for OG Image:', e);
   }

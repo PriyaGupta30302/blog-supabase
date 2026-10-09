@@ -22,17 +22,35 @@ function getBaseUrl() {
   return `https://${rawUrl}`;
 }
 
+async function getBlogBySlug(rawSlug: string) {
+  const decodedSlug = decodeURIComponent(rawSlug || '');
+  
+  const { data: blog1 } = await supabase
+    .from('blogs')
+    .select('*')
+    .eq('slug', decodedSlug)
+    .maybeSingle();
+
+  if (blog1) return blog1;
+
+  if (rawSlug !== decodedSlug) {
+    const { data: blog2 } = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('slug', rawSlug)
+      .maybeSingle();
+    if (blog2) return blog2;
+  }
+
+  return null;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const decodedSlug = decodeURIComponent(slug || '');
     
-    // Fetch blog safely matching either raw or decoded slug
-    const { data: blog } = await supabase
-      .from('blogs')
-      .select('title, description, content, img, author_name, created_at, tags, slug')
-      .or(`slug.eq.${slug},slug.eq.${decodedSlug}`)
-      .maybeSingle();
+    // Fetch blog safely without PostgREST .or syntax errors
+    const blog = await getBlogBySlug(slug);
 
     if (!blog) {
       return {
@@ -116,7 +134,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug || '');
   
   // Safely get userId from Clerk without throwing build-time errors
   let userId: string | null = null;
@@ -127,14 +144,10 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     userId = null;
   }
 
-  // Fetch blog data safely using maybeSingle
-  const { data: blog, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .or(`slug.eq.${slug},slug.eq.${decodedSlug}`)
-    .maybeSingle();
+  // Fetch blog data safely using getBlogBySlug
+  const blog = await getBlogBySlug(slug);
 
-  if (error || !blog) {
+  if (!blog) {
     notFound();
   }
 
