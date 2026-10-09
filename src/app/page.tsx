@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import Image from 'next/image';
 import BlogCardSkeleton from '@/components/BlogCardSkeleton';
 import PageLoader from '@/components/PageLoader';
 
@@ -26,12 +27,16 @@ export default function Home() {
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchData() {
+  const fetchData = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+
+    try {
       // 1. Fetch Categories
-      const { data: catData, error: catError } = await supabase.from('categories').select('*').order('name');
+      const { data: catData } = await supabase.from('categories').select('*').order('name');
       if (catData) setCategories(catData);
 
       // 2. Fetch Blogs
@@ -45,9 +50,20 @@ export default function Home() {
       }
 
       const { data, error } = await query;
+      if (error) {
+        throw error;
+      }
+
       if (data) setBlogs(data);
+    } catch (err: any) {
+      console.error("Error fetching homepage blogs:", err);
+      setErrorMsg("Unable to fetch stories. If your database was recently paused, please try refreshing in a moment.");
+    } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [selectedCategory]);
 
@@ -105,8 +121,18 @@ export default function Home() {
         </div>
 
         {/* Blog Grid */}
-
-        {loading ? (
+        {errorMsg ? (
+          <div className="text-center py-16 px-6 bg-red-500/10 border border-red-500/30 rounded-3xl max-w-xl mx-auto">
+            <h3 className="text-lg font-bold text-red-500 mb-2">Connection Issue</h3>
+            <p className="text-sm text-foreground/70 mb-6">{errorMsg}</p>
+            <button
+              onClick={fetchData}
+              className="px-6 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-md hover:bg-primary-hover transition-all"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <BlogCardSkeleton key={i} />
@@ -118,11 +144,13 @@ export default function Home() {
               <div key={blog.id} className="bg-card rounded-2xl overflow-hidden shadow-sm border border-card-border hover:shadow-xl transition-all duration-300 group flex flex-col">
                 <Link href={`/blog/${blog.slug}`} className="block">
                   {blog.img ? (
-                    <div className="h-48 overflow-hidden">
-                      <img 
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <Image 
                         src={blog.img} 
                         alt={blog.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill
+                        className="object-cover group-hover:scale-105 transition duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
                   ) : (
@@ -174,3 +202,4 @@ export default function Home() {
     </div>
   );
 }
+

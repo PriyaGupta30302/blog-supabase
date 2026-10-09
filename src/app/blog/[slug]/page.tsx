@@ -6,33 +6,67 @@ import { incrementBlogViews, getBlogLikesCount, checkIfUserLiked, getBlogComment
 import { auth } from "@clerk/nextjs/server";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
+import Link from "next/link";
+import Image from "next/image";
+import { Metadata } from "next";
+import { stripHtml } from "@/lib/text-utils";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const { data: blog } = await supabase
+    .from('blogs')
+    .select('title, description, content, img, author_name')
+    .eq('slug', slug)
+    .single();
+
+  if (!blog) {
+    return {
+      title: 'Blog Not Found',
+    };
+  }
+
+  const plainDescription = stripHtml(blog.description || blog.content || '').slice(0, 160);
+
+  return {
+    title: `${blog.title} | Blog`,
+    description: plainDescription,
+    openGraph: {
+      title: blog.title,
+      description: plainDescription,
+      images: blog.img ? [{ url: blog.img }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: blog.title,
+      description: plainDescription,
+      images: blog.img ? [blog.img] : [],
+    },
+  };
+}
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const { userId } = await auth();
 
-  // Artificial delay to ensure Page Loader (800ms) -> Skeleton (800ms) sequence is visible
-  const [{ data: blog, error }] = await Promise.all([
-    supabase
-      .from('blogs')
-      .select('*')
-      .eq('slug', slug)
-      .single(),
-    new Promise(resolve => setTimeout(resolve, 1700)) // Slightly more than 1600ms for safety
-  ]);
+  // Fetch blog data directly without artificial delay
+  const { data: blog, error } = await supabase
+    .from('blogs')
+    .select('*')
+    .eq('slug', slug)
+    .single();
 
   if (error || !blog) {
     notFound();
   }
 
-  // Fetch likes & comments data
+  // Fetch likes & comments data concurrently
   const [likesCount, isLiked, commentsResult] = await Promise.all([
     getBlogLikesCount(blog.id),
     userId ? checkIfUserLiked(blog.id, userId) : Promise.resolve(false),
     getBlogComments(blog.id)
   ]);
 
-  // Increment views
+  // Increment views asynchronously
   await incrementBlogViews(blog.id);
 
   return (
@@ -41,12 +75,12 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Back Link */}
-        <a href="/" className="inline-flex items-center text-sm text-foreground/50 hover:text-primary mb-8 transition-colors">
+        <Link href="/" className="inline-flex items-center text-sm text-foreground/50 hover:text-primary mb-8 transition-colors">
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
           </svg>
           Back to feed
-        </a>
+        </Link>
 
         {/* Hero Section */}
         <header className="mb-12">
@@ -93,11 +127,13 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
         {/* Featured Image */}
         {blog.img && (
-          <div className="rounded-3xl overflow-hidden mb-12 shadow-2xl border border-card-border">
-            <img 
+          <div className="relative w-full h-[400px] rounded-3xl overflow-hidden mb-12 shadow-2xl border border-card-border">
+            <Image 
               src={blog.img} 
               alt={blog.title} 
-              className="w-full h-auto object-cover "
+              fill
+              className="object-cover"
+              priority
             />
           </div>
         )}
@@ -121,3 +157,4 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     </div>
   );
 }
+
