@@ -7,6 +7,7 @@ import { auth } from "@clerk/nextjs/server";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
 import ShareButton from "@/components/ShareButton";
+import BlogAuthGuard from "@/components/BlogAuthGuard";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
@@ -236,13 +237,15 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           </div>
         )}
 
-        {/* Blog Content */}
-        <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg border border-card-border mb-12">
-          <BlogContent htmlContent={blog.description || ''} />
-        </div>
+        {/* Blog Content & Comments Protected by Auth Guard */}
+        <BlogAuthGuard blogTitle={blog.title}>
+          <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg border border-card-border mb-12">
+            <BlogContent htmlContent={blog.description || ''} />
+          </div>
 
-        {/* Comment Section */}
-        <CommentSection blogId={blog.id} initialComments={(commentsResult.success ? commentsResult.data : []) as any} />
+          {/* Comment Section */}
+          <CommentSection blogId={blog.id} initialComments={(commentsResult.success ? commentsResult.data : []) as any} />
+        </BlogAuthGuard>
 
         {/* Footer Info */}
         <footer className="mt-16 pt-8 border-t border-card-border">
