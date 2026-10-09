@@ -15,11 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const defaultUrl = process.env.NEXT_PUBLIC_APP_URL 
-  ? `https://${process.env.NEXT_PUBLIC_APP_URL}` 
-  : process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
+const rawUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || "localhost:3000";
+const defaultUrl = rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
+  ? rawUrl
+  : `https://${rawUrl}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),

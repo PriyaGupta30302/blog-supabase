@@ -6,6 +6,7 @@ import { incrementBlogViews, getBlogLikesCount, checkIfUserLiked, getBlogComment
 import { auth } from "@clerk/nextjs/server";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
+import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
@@ -13,42 +14,99 @@ import { stripHtml } from "@/lib/text-utils";
 
 export const dynamic = 'force-dynamic';
 
+function getBaseUrl() {
+  const rawUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'localhost:3000';
+  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+    return rawUrl;
+  }
+  return `https://${rawUrl}`;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const decodedSlug = decodeURIComponent(slug);
+    const decodedSlug = decodeURIComponent(slug || '');
     
+    // Fetch blog safely matching either raw or decoded slug
     const { data: blog } = await supabase
       .from('blogs')
-      .select('title, description, content, img, author_name')
-      .eq('slug', decodedSlug)
+      .select('title, description, content, img, author_name, created_at, tags, slug')
+      .or(`slug.eq.${slug},slug.eq.${decodedSlug}`)
       .maybeSingle();
 
     if (!blog) {
       return {
-        title: 'Blog | Read Stories',
+        title: 'Story Not Found | BlogApp',
         description: 'Discover latest thoughts, ideas, and stories from our community.',
       };
     }
 
-    const plainDescription = stripHtml(blog.description || blog.content || '').slice(0, 160);
+    const plainDescription = stripHtml(blog.description || blog.content || '').slice(0, 160) || 'Discover thoughts, ideas, and stories from our community on BlogApp.';
+    const baseUrl = getBaseUrl();
+    const pageUrl = `${baseUrl}/blog/${blog.slug || slug}`;
+    
+    const dynamicOgUrl = `${pageUrl}/opengraph-image`;
+    
+    // Convert blog.img to absolute URL if present
+    let rawImgUrl: string | null = null;
+    if (blog.img) {
+      if (blog.img.startsWith('http://') || blog.img.startsWith('https://')) {
+        rawImgUrl = blog.img;
+      } else {
+        rawImgUrl = `${baseUrl}${blog.img.startsWith('/') ? '' : '/'}${blog.img}`;
+      }
+    }
+
+    const imagesList = [];
+
+    // Prioritize the blog's raw featured image first if available
+    if (rawImgUrl) {
+      imagesList.push({
+        url: rawImgUrl,
+        secureUrl: rawImgUrl,
+        width: 1200,
+        height: 630,
+        alt: blog.title,
+      });
+    }
+
+    // Always include dynamic OG image generator as fallback
+    imagesList.push({
+      url: dynamicOgUrl,
+      secureUrl: dynamicOgUrl,
+      width: 1200,
+      height: 630,
+      alt: blog.title,
+      type: 'image/png',
+    });
 
     return {
-      title: `${blog.title} | Blog`,
+      title: `${blog.title} | BlogApp`,
       description: plainDescription,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: pageUrl,
+      },
       openGraph: {
         title: blog.title,
         description: plainDescription,
-        images: blog.img ? [{ url: blog.img }] : [],
+        url: pageUrl,
+        siteName: 'BlogApp',
+        type: 'article',
+        publishedTime: blog.created_at,
+        authors: blog.author_name ? [blog.author_name] : undefined,
+        tags: blog.tags || [],
+        images: imagesList,
       },
       twitter: {
         card: 'summary_large_image',
         title: blog.title,
         description: plainDescription,
-        images: blog.img ? [blog.img] : [],
+        images: rawImgUrl ? [rawImgUrl, dynamicOgUrl] : [dynamicOgUrl],
       },
     };
   } catch (error) {
+    console.error('Error generating blog metadata:', error);
     return {
       title: 'Blog | Read Stories',
       description: 'Discover latest thoughts, ideas, and stories from our community.',
@@ -58,6 +116,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug || '');
   
   // Safely get userId from Clerk without throwing build-time errors
   let userId: string | null = null;
@@ -72,7 +131,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
-    .eq('slug', slug)
+    .or(`slug.eq.${slug},slug.eq.${decodedSlug}`)
     .maybeSingle();
 
   if (error || !blog) {
@@ -137,11 +196,17 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
               </div>
             </div>
 
-            <LikeButton 
-              blogId={blog.id} 
-              initialLikes={likesCount} 
-              initialIsLiked={isLiked} 
-            />
+            <div className="flex items-center space-x-3">
+              <ShareButton 
+                title={blog.title} 
+                text={stripHtml(blog.description || blog.content || '').slice(0, 100)} 
+              />
+              <LikeButton 
+                blogId={blog.id} 
+                initialLikes={likesCount} 
+                initialIsLiked={isLiked} 
+              />
+            </div>
           </div>
         </header>
 
@@ -168,13 +233,18 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
         {/* Footer Info */}
         <footer className="mt-16 pt-8 border-t border-card-border">
-          <div className="bg-muted rounded-2xl p-8 text-center">
+          <div className="bg-muted rounded-2xl p-8 text-center flex flex-col items-center">
             <h3 className="text-xl font-bold mb-2 text-foreground">Thanks for reading!</h3>
-            <p className="text-foreground/60">Shared by {blog.author_name}. Check out more stories on our dashboard.</p>
+            <p className="text-foreground/60 mb-6">Shared by {blog.author_name}. Check out more stories on our community.</p>
+            <ShareButton 
+              title={blog.title} 
+              text={stripHtml(blog.description || blog.content || '').slice(0, 100)} 
+            />
           </div>
         </footer>
       </main>
     </div>
   );
 }
+
 

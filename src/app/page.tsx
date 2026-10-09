@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import BlogCardSkeleton from '@/components/BlogCardSkeleton';
 import PageLoader from '@/components/PageLoader';
+import ShareButton from '@/components/ShareButton';
 
 import { stripHtml, formatDate } from '@/lib/text-utils';
 
@@ -177,7 +178,13 @@ export default function Home() {
                     {stripHtml(blog.description || blog.content || '')}
                   </p>
                   
-                  <div className="mt-auto pt-4 border-t border-card-border flex items-center justify-end">
+                  <div className="mt-auto pt-4 border-t border-card-border flex items-center justify-between">
+                    <ShareButton 
+                      title={blog.title} 
+                      text={stripHtml(blog.description || blog.content || '').slice(0, 100)}
+                      url={typeof window !== 'undefined' ? `${window.location.origin}/blog/${blog.slug}` : undefined}
+                      variant="icon"
+                    />
                     <Link 
                       href={`/blog/${blog.slug}`}
                       className="text-primary font-semibold text-sm hover:translate-x-1 transition duration-200 flex items-center"
