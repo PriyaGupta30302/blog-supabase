@@ -15,7 +15,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const defaultUrl = process.env.NEXT_PUBLIC_APP_URL 
+  ? `https://${process.env.NEXT_PUBLIC_APP_URL}` 
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(defaultUrl),
   title: "BlogApp - Create & Share",
   description: "A modern blog application with multi-theme support",
 };
