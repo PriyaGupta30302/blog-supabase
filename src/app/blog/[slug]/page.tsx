@@ -58,14 +58,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { userId } = await auth();
+  
+  // Safely get userId from Clerk without throwing build-time errors
+  let userId: string | null = null;
+  try {
+    const authData = await auth();
+    userId = authData?.userId || null;
+  } catch (authErr) {
+    userId = null;
+  }
 
-  // Fetch blog data directly without artificial delay
+  // Fetch blog data safely using maybeSingle
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
   if (error || !blog) {
     notFound();
