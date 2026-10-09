@@ -12,36 +12,46 @@ import { Metadata } from "next";
 import { stripHtml } from "@/lib/text-utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const { data: blog } = await supabase
-    .from('blogs')
-    .select('title, description, content, img, author_name')
-    .eq('slug', slug)
-    .single();
+  try {
+    const { slug } = await params;
+    const decodedSlug = decodeURIComponent(slug);
+    
+    const { data: blog } = await supabase
+      .from('blogs')
+      .select('title, description, content, img, author_name')
+      .eq('slug', decodedSlug)
+      .maybeSingle();
 
-  if (!blog) {
+    if (!blog) {
+      return {
+        title: 'Blog | Read Stories',
+        description: 'Discover latest thoughts, ideas, and stories from our community.',
+      };
+    }
+
+    const plainDescription = stripHtml(blog.description || blog.content || '').slice(0, 160);
+
     return {
-      title: 'Blog Not Found',
+      title: `${blog.title} | Blog`,
+      description: plainDescription,
+      openGraph: {
+        title: blog.title,
+        description: plainDescription,
+        images: blog.img ? [{ url: blog.img }] : [],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: blog.title,
+        description: plainDescription,
+        images: blog.img ? [blog.img] : [],
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Blog | Read Stories',
+      description: 'Discover latest thoughts, ideas, and stories from our community.',
     };
   }
-
-  const plainDescription = stripHtml(blog.description || blog.content || '').slice(0, 160);
-
-  return {
-    title: `${blog.title} | Blog`,
-    description: plainDescription,
-    openGraph: {
-      title: blog.title,
-      description: plainDescription,
-      images: blog.img ? [{ url: blog.img }] : [],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: blog.title,
-      description: plainDescription,
-      images: blog.img ? [blog.img] : [],
-    },
-  };
 }
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
