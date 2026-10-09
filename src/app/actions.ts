@@ -4,11 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 import { checkIsAdmin } from '@/lib/auth-utils';
 import { revalidatePath } from 'next/cache';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Initialize admin client once
-const adminSupabase = createClient(supabaseUrl, serviceRoleKey);
+// Lazy initialize admin client to prevent build-time module evaluation errors
+function getAdminSupabase() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  return createClient(supabaseUrl, serviceRoleKey);
+}
 
 export async function deleteBlogAction(blogId: string, imageUrl: string | null) {
   try {
@@ -22,14 +23,14 @@ export async function deleteBlogAction(blogId: string, imageUrl: string | null) 
 
       if (fileName) {
         const decodedFileName = decodeURIComponent(fileName);
-        await adminSupabase.storage
+        await getAdminSupabase().storage
           .from('blog-images')
           .remove([decodedFileName]);
       }
     }
 
     // 2. Delete blog record from database
-    const { error: dbError } = await adminSupabase
+    const { error: dbError } = await getAdminSupabase()
       .from('blogs')
       .delete()
       .eq('id', blogId);
@@ -57,19 +58,19 @@ export async function archiveBlogImageAction(imageUrl: string) {
 
     const decodedFileName = decodeURIComponent(fileName);
 
-    const { data: fileData, error: downloadError } = await adminSupabase.storage
+    const { data: fileData, error: downloadError } = await getAdminSupabase().storage
       .from('blog-images')
       .download(decodedFileName);
 
     if (downloadError) throw downloadError;
 
-    const { error: uploadError } = await adminSupabase.storage
+    const { error: uploadError } = await getAdminSupabase().storage
       .from('edit-images')
       .upload(decodedFileName, fileData, { upsert: true });
 
     if (uploadError) throw uploadError;
 
-    await adminSupabase.storage
+    await getAdminSupabase().storage
       .from('blog-images')
       .remove([decodedFileName]);
 
@@ -86,12 +87,12 @@ export async function saveBlogAction(blogData: any, blogId?: string) {
 
     let result;
     if (blogId) {
-      result = await adminSupabase
+      result = await getAdminSupabase()
         .from('blogs')
         .update(blogData)
         .eq('id', blogId);
     } else {
-      result = await adminSupabase
+      result = await getAdminSupabase()
         .from('blogs')
         .insert([blogData]);
     }
@@ -113,10 +114,10 @@ export async function saveBlogAction(blogData: any, blogId?: string) {
 
 export async function incrementBlogViews(blogId: string) {
   try {
-    const { error } = await adminSupabase.rpc('increment_views', { blog_id: blogId });
+    const { error } = await getAdminSupabase().rpc('increment_views', { blog_id: blogId });
     if (error) {
       // Fallback if RPC doesn't exist yet but column does
-      const { data: currentBlog, error: fetchError } = await adminSupabase
+      const { data: currentBlog, error: fetchError } = await getAdminSupabase()
         .from('blogs')
         .select('views')
         .eq('id', blogId)
@@ -125,7 +126,7 @@ export async function incrementBlogViews(blogId: string) {
       if (fetchError) throw fetchError;
 
       const newViews = (currentBlog?.views || 0) + 1;
-      await adminSupabase
+      await getAdminSupabase()
         .from('blogs')
         .update({ views: newViews })
         .eq('id', blogId);
@@ -149,7 +150,7 @@ export async function incrementBlogViews(blogId: string) {
 export async function toggleLikeAction(blogId: string, userId: string) {
   try {
     // Check if liked
-    const { data: existingLike, error: fetchError } = await adminSupabase
+    const { data: existingLike, error: fetchError } = await getAdminSupabase()
       .from('blog_likes')
       .select('id')
       .eq('blog_id', blogId)
@@ -159,9 +160,9 @@ export async function toggleLikeAction(blogId: string, userId: string) {
     if (fetchError) throw fetchError;
 
     if (existingLike) {
-      await adminSupabase.from('blog_likes').delete().eq('id', existingLike.id);
+      await getAdminSupabase().from('blog_likes').delete().eq('id', existingLike.id);
     } else {
-      await adminSupabase.from('blog_likes').insert([{ blog_id: blogId, user_id: userId }]);
+      await getAdminSupabase().from('blog_likes').insert([{ blog_id: blogId, user_id: userId }]);
     }
     
     revalidatePath(`/blog/${blogId}`);
@@ -180,7 +181,7 @@ export async function toggleLikeAction(blogId: string, userId: string) {
 
 export async function getBlogLikesCount(blogId: string) {
   try {
-    const { count, error } = await adminSupabase
+    const { count, error } = await getAdminSupabase()
       .from('blog_likes')
       .select('*', { count: 'exact', head: true })
       .eq('blog_id', blogId);
@@ -194,7 +195,7 @@ export async function getBlogLikesCount(blogId: string) {
 
 export async function checkIfUserLiked(blogId: string, userId: string) {
   try {
-    const { data, error } = await adminSupabase
+    const { data, error } = await getAdminSupabase()
       .from('blog_likes')
       .select('id')
       .eq('blog_id', blogId)
@@ -210,7 +211,7 @@ export async function checkIfUserLiked(blogId: string, userId: string) {
 
 export async function addCommentAction(blogId: string, userId: string, userName: string, content: string) {
   try {
-    const { error } = await adminSupabase
+    const { error } = await getAdminSupabase()
       .from('comments')
       .insert([{ 
         blog_id: blogId, 
@@ -233,7 +234,7 @@ export async function deleteCommentAction(commentId: string) {
   try {
     await checkIsAdmin();
 
-    const { error } = await adminSupabase
+    const { error } = await getAdminSupabase()
       .from('comments')
       .delete()
       .eq('id', commentId);
@@ -249,7 +250,7 @@ export async function deleteCommentAction(commentId: string) {
 
 export async function getBlogComments(blogId: string) {
   try {
-    const { data, error } = await adminSupabase
+    const { data, error } = await getAdminSupabase()
       .from('comments')
       .select('*')
       .eq('blog_id', blogId)
@@ -281,7 +282,7 @@ export async function getBlogComments(blogId: string) {
 
 export async function getCategories() {
   try {
-    const { data, error } = await adminSupabase
+    const { data, error } = await getAdminSupabase()
       .from('categories')
       .select('*')
       .order('name');
@@ -312,7 +313,7 @@ export async function getCategories() {
 export async function createCategory(name: string) {
   try {
     await checkIsAdmin();
-    const { data, error } = await adminSupabase
+    const { data, error } = await getAdminSupabase()
       .from('categories')
       .insert([{ name }])
       .select()
@@ -331,7 +332,7 @@ export async function createCategory(name: string) {
 export async function deleteCategory(id: string) {
   try {
     await checkIsAdmin();
-    const { error } = await adminSupabase
+    const { error } = await getAdminSupabase()
       .from('categories')
       .delete()
       .eq('id', id);
