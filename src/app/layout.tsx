@@ -17,12 +17,25 @@ const geistMono = Geist_Mono({
 
 const defaultUrl = process.env.NEXT_PUBLIC_APP_URL 
   ? `https://${process.env.NEXT_PUBLIC_APP_URL}` 
-  : "http://localhost:3000";
+  : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "BlogApp - Create & Share",
-  description: "A modern blog application with multi-theme support",
+  title: "BlogApp - Create & Share Stories",
+  description: "Discover the latest thoughts, ideas, and stories from our community.",
+  openGraph: {
+    title: "BlogApp - Create & Share Stories",
+    description: "Discover the latest thoughts, ideas, and stories from our community.",
+    siteName: "BlogApp",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BlogApp - Create & Share Stories",
+    description: "Discover the latest thoughts, ideas, and stories from our community.",
+  },
 };
 
 export default function RootLayout({
