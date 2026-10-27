@@ -7,23 +7,17 @@ import { auth } from "@clerk/nextjs/server";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
 import ShareButton from "@/components/ShareButton";
-import BlogAuthGuard from "@/components/BlogAuthGuard";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
 import { stripHtml, readingTime } from "@/lib/text-utils";
 import DetailFX from "@/components/DetailFX";
 import SplitWords from "@/components/SplitWords";
+import { getSiteUrl } from "@/lib/site";
 
 export const dynamic = 'force-dynamic';
 
-function getBaseUrl() {
-  const rawUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'localhost:3000';
-  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
-    return rawUrl;
-  }
-  return `https://${rawUrl}`;
-}
+const getBaseUrl = getSiteUrl;
 
 async function getBlogBySlug(rawSlug: string) {
   const decodedSlug = decodeURIComponent(rawSlug || '');
@@ -204,7 +198,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
             <div className="flex flex-wrap items-center justify-between gap-5">
               <div className="d-meta d-hide flex items-center gap-4">
-                <div className="grid h-12 w-12 -rotate-6 place-items-center border-2 border-ink bg-accent-2 font-display text-xl font-extrabold text-ink shadow-[3px_3px_0_var(--ink)]">
+                <div className="grid h-12 w-12 min-h-12 min-w-12 shrink-0 -rotate-6 place-items-center border-2 border-ink bg-accent-2 font-display text-xl font-extrabold text-ink shadow-[3px_3px_0_var(--ink)]">
                   {blog.author_name?.[0]?.toUpperCase() || 'B'}
                 </div>
                 <div>
@@ -255,17 +249,15 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
             </div>
           )}
 
-          {/* Blog Content & Comments Protected by Auth Guard */}
-          <BlogAuthGuard blogTitle={blog.title}>
-            <div data-reveal className="d-hide mb-16 rounded-3xl border-2 border-ink bg-card p-6 shadow-[8px_8px_0_var(--ink)] sm:p-10 md:p-14">
-              <BlogContent htmlContent={blog.description || ''} />
-            </div>
+          {/* Blog Content: public. Liking and commenting still ask for sign-in. */}
+          <div data-reveal className="d-hide mb-16 rounded-3xl border-2 border-ink bg-card p-6 shadow-[8px_8px_0_var(--ink)] sm:p-10 md:p-14">
+            <BlogContent htmlContent={blog.description || ''} />
+          </div>
 
-            {/* Comment Section */}
-            <div data-reveal className="d-hide">
-              <CommentSection blogId={blog.id} initialComments={(commentsResult.success ? commentsResult.data : []) as any} />
-            </div>
-          </BlogAuthGuard>
+          {/* Comment Section */}
+          <div data-reveal className="d-hide">
+            <CommentSection blogId={blog.id} initialComments={(commentsResult.success ? commentsResult.data : []) as any} />
+          </div>
 
           {/* Footer Info */}
           <footer data-reveal className="d-hide mt-20">

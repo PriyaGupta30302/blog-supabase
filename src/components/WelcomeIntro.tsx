@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { gsap, useGSAP, prefersReducedMotion } from '@/lib/gsap';
 
 const SEEN_KEY = 'blogapp-intro-seen';
@@ -16,7 +16,45 @@ interface WelcomeIntroProps {
  */
 export default function WelcomeIntro({ onReveal }: WelcomeIntroProps) {
   const root = useRef<HTMLDivElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const revealed = useRef(false);
   const [skipped, setSkipped] = useState(false);
+
+  // onReveal must fire exactly once, whether the intro finishes or is skipped.
+  const reveal = () => {
+    if (revealed.current) return;
+    revealed.current = true;
+    onReveal();
+  };
+
+  const skip = () => {
+    if (revealed.current) return;
+    tlRef.current?.kill();
+    reveal();
+    try {
+      sessionStorage.setItem(SEEN_KEY, '1');
+    } catch {}
+    gsap.to(root.current, {
+      yPercent: -100,
+      duration: 0.6,
+      ease: 'power4.inOut',
+      onComplete: () => setSkipped(true),
+    });
+  };
+
+  // Escape / Enter / Space also skip
+  useEffect(() => {
+    if (skipped) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        skip();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skipped]);
 
   // Decide before first paint so returning visitors never see a flash.
   useLayoutEffect(() => {
@@ -26,7 +64,7 @@ export default function WelcomeIntro({ onReveal }: WelcomeIntroProps) {
     } catch {}
     if (seen || prefersReducedMotion()) {
       setSkipped(true);
-      onReveal();
+      reveal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -43,6 +81,8 @@ export default function WelcomeIntro({ onReveal }: WelcomeIntroProps) {
           setSkipped(true);
         },
       });
+
+      tlRef.current = tl;
 
       tl.from('.intro-line', {
         yPercent: 120,
@@ -64,7 +104,7 @@ export default function WelcomeIntro({ onReveal }: WelcomeIntroProps) {
           ease: 'power3.in',
           stagger: 0.05,
         }, '+=0.25')
-        .add(() => onReveal(), '-=0.2')
+        .add(() => reveal(), '-=0.2')
         .to(root.current, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' }, '<');
     },
     { scope: root, dependencies: [skipped] }
@@ -76,8 +116,18 @@ export default function WelcomeIntro({ onReveal }: WelcomeIntroProps) {
     <div
       ref={root}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-primary text-primary-foreground"
-      aria-hidden="true"
+      onClick={skip}
     >
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          skip();
+        }}
+        className="absolute right-4 top-4 z-10 rounded-full border-2 border-ink bg-background px-4 py-2 text-sm font-bold text-foreground shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none sm:right-6 sm:top-6"
+      >
+        Skip →
+      </button>
       <div className="relative px-6 text-center font-display font-extrabold leading-[0.95] tracking-tight text-[clamp(2.75rem,10vw,8rem)]">
         <div className="overflow-hidden pb-2">
           <div className="intro-line">Welcome to</div>

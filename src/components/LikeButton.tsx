@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { toggleLikeAction } from '@/app/actions';
 import { gsap, prefersReducedMotion } from '@/lib/gsap';
+import { useFeedback } from '@/context/FeedbackContext';
 
 interface LikeButtonProps {
   blogId: string;
@@ -15,6 +16,7 @@ const PARTICLES = 8;
 
 export default function LikeButton({ blogId, initialLikes, initialIsLiked }: LikeButtonProps) {
   const { user, isLoaded } = useUser();
+  const { toast } = useFeedback();
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [loading, setLoading] = useState(false);
@@ -47,7 +49,7 @@ export default function LikeButton({ blogId, initialLikes, initialIsLiked }: Lik
 
   const handleLike = async () => {
     if (!isLoaded || !user) {
-      alert('Please sign in to like this post!');
+      toast.info('Sign in to like this post.');
       return;
     }
 

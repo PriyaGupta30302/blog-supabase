@@ -4,6 +4,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 import { ThemeProvider } from "@/context/ThemeContext";
+import { FeedbackProvider } from "@/context/FeedbackContext";
+import { getSiteUrl } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,10 +23,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const rawUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || "localhost:3000";
-const defaultUrl = rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
-  ? rawUrl
-  : `https://${rawUrl}`;
+const defaultUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
@@ -43,6 +42,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Runs before first paint so a saved theme never flashes the default (mint) first.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('app-theme');if(t){var r=document.documentElement;r.setAttribute('data-theme',t);if(t==='dark'){r.classList.add('dark');}}}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,12 +52,15 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} antialiased min-h-screen bg-background text-foreground transition-colors duration-300`}
         >
           <ThemeProvider>
-            {children}
+            <FeedbackProvider>{children}</FeedbackProvider>
           </ThemeProvider>
         </body>
       </html>

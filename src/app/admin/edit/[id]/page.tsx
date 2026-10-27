@@ -5,10 +5,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import BlogForm from '@/components/BlogForm';
 import Header from '@/components/Header';
+import { useFeedback } from '@/context/FeedbackContext';
 
 export default function EditBlogPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { toast } = useFeedback();
   const [blog, setBlog] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,7 @@ export default function EditBlogPage() {
 
       if (error) {
         console.error('Error fetching blog:', error);
-        alert('Failed to load blog post');
+        toast.error('Failed to load blog post.');
         router.push('/admin');
       } else {
         setBlog(data);
@@ -33,7 +35,7 @@ export default function EditBlogPage() {
     }
 
     fetchBlog();
-  }, [id, router]);
+  }, [id, router, toast]);
 
   if (loading) {
     return (
@@ -65,7 +67,7 @@ export default function EditBlogPage() {
         <BlogForm 
           initialData={blog} 
           onSuccess={() => {
-            alert('Blog updated successfully!');
+            toast.success('Post updated.');
             router.push('/admin');
             router.refresh();
           }} 

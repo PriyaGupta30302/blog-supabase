@@ -13,7 +13,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="group flex items-center gap-2.5 flex-shrink-0">
-            <span className="grid h-9 w-9 -rotate-6 place-items-center border-2 border-ink bg-primary font-display text-lg font-extrabold text-primary-foreground shadow-[3px_3px_0_var(--ink)] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
+            <span className="grid h-9 w-9 shrink-0 -rotate-6 place-items-center border-2 border-ink bg-primary font-display text-lg font-extrabold text-primary-foreground shadow-[3px_3px_0_var(--ink)] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
               B
             </span>
             <span className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">

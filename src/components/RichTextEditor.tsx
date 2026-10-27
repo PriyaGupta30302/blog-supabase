@@ -17,6 +17,8 @@ import { common, createLowlight } from 'lowlight';
 import { useCallback, useRef, useState, useEffect } from 'react';
 // import './editor-styles.css'; // Moved to globals.css to fix styling issues
 
+import { useFeedback } from '@/context/FeedbackContext';
+
 const lowlight = createLowlight(common);
 
 // ✅ Calculate read time from Tiptap JSON
@@ -117,6 +119,7 @@ function calculateReadTimeFromJSON(json: any) {
 }
 
 const MenuBar = ({ editor, onImageUpload, readTime }: any) => {
+  const { toast } = useFeedback();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -126,12 +129,12 @@ const MenuBar = ({ editor, onImageUpload, readTime }: any) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file');
+      toast.error('Please select a valid image file.');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB');
+      toast.error('Image size must be less than 5MB.');
       return;
     }
 
@@ -151,11 +154,11 @@ const MenuBar = ({ editor, onImageUpload, readTime }: any) => {
       }
     } catch (error: any) {
       console.error('Image upload failed:', error);
-      alert('Image upload failed: ' + error.message);
+      toast.error('Image upload failed: ' + error.message);
     } finally {
       setIsUploading(false);
     }
-  }, [editor, onImageUpload]);
+  }, [editor, onImageUpload, toast]);
 
   const setLink = useCallback(() => {
     if (!linkUrl) {

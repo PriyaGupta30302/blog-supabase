@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { addCommentAction, deleteCommentAction } from '@/app/actions';
 import { isAdmin } from '@/lib/auth-client-utils';
+import { useFeedback } from '@/context/FeedbackContext';
 
 interface Comment {
   id: string;
@@ -21,6 +22,7 @@ interface CommentSectionProps {
 export default function CommentSection({ blogId, initialComments }: CommentSectionProps) {
   const { user, isLoaded } = useUser();
   const isUserAdmin = isAdmin(user);
+  const { toast, confirm } = useFeedback();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -70,12 +72,21 @@ export default function CommentSection({ blogId, initialComments }: CommentSecti
   };
 
   const handleDelete = async (commentId: string) => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
+    const ok = await confirm({
+      title: 'Delete comment?',
+      message: 'This comment will be removed for everyone.',
+      confirmText: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
 
     try {
       const result = await deleteCommentAction(commentId);
       if (result.success) {
         setComments(comments.filter(c => c.id !== commentId));
+        toast.success('Comment deleted.');
+      } else {
+        toast.error('Could not delete the comment.');
       }
     } catch (error) {
       console.error('Failed to delete comment:', error);
@@ -121,7 +132,7 @@ export default function CommentSection({ blogId, initialComments }: CommentSecti
           <div key={comment.id} className="bg-card p-5 sm:p-6 rounded-2xl border-2 border-ink shadow-[3px_3px_0_var(--ink)] group">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center">
-                <span className="mr-3 grid h-8 w-8 place-items-center rounded-full border-2 border-ink bg-primary-light text-sm font-extrabold text-foreground">
+                <span className="mr-3 grid h-8 w-8 min-h-8 min-w-8 shrink-0 aspect-square place-items-center rounded-full border-2 border-ink bg-primary-light text-sm font-extrabold text-foreground">
                   {comment.user_name?.[0]?.toUpperCase() || '?'}
                 </span>
                 <span className="font-bold text-foreground">{comment.user_name}</span>

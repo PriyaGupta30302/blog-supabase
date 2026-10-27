@@ -9,6 +9,7 @@ import { formatDate } from '@/lib/text-utils';
 
 import { useUser } from '@clerk/nextjs';
 import { isAdmin } from '@/lib/auth-client-utils';
+import { useFeedback } from '@/context/FeedbackContext';
 
 interface Blog {
   id: string;
@@ -26,6 +27,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
   const [loading, setLoading] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const router = useRouter();
+  const { toast, confirm } = useFeedback();
 
   const isUserAdmin = isAdmin(user);
 
@@ -35,7 +37,13 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
       return;
     }
     
-    if (!confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) return;
+    const ok = await confirm({
+      title: 'Delete this post?',
+      message: `“${blog.title}” will be permanently deleted. This can’t be undone.`,
+      confirmText: 'Delete post',
+      danger: true,
+    });
+    if (!ok) return;
     
     setLoading(blog.id);
     setActionError(null);
@@ -49,7 +57,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
 
       setBlogs(blogs.filter(b => b.id !== blog.id));
       router.refresh();
-      alert('Blog deleted successfully!');
+      toast.success('Post deleted.');
     } catch (err: any) {
       console.error('Blog deletion error:', err);
       setActionError(err.message || 'Failed to delete blog');
@@ -94,7 +102,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                 <tr key={blog.id} className="hover:bg-primary-light/50 transition duration-200 group">
                   <td className="px-8 py-6">
                     <div className="flex items-center">
-                      <div className="h-12 w-16 bg-muted rounded-lg mr-4 overflow-hidden flex-shrink-0 border-2 border-ink">
+                      <div className="h-12 w-16 min-w-16 bg-muted rounded-lg mr-4 overflow-hidden shrink-0 border-2 border-ink">
                         {blog.img ? (
                           <img src={blog.img} alt="" className="w-full h-full object-cover" />
                         ) : (
@@ -109,10 +117,10 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex items-center">
-                      <div className="h-7 w-7 rounded-full border-2 border-ink bg-accent-2 flex items-center justify-center text-[10px] font-extrabold text-ink mr-2">
+                      <div className="h-7 w-7 min-h-7 min-w-7 shrink-0 aspect-square rounded-full border-2 border-ink bg-accent-2 flex items-center justify-center text-[10px] font-extrabold text-ink mr-2">
                         {blog.author_name?.[0] || 'A'}
                       </div>
-                      <span className="text-sm font-medium text-foreground/70">{blog.author_name || 'Admin'}</span>
+                      <span className="min-w-0 text-sm font-medium text-foreground/70">{blog.author_name || 'Admin'}</span>
                     </div>
                   </td>
                   <td className="px-8 py-6 text-sm text-foreground/40">

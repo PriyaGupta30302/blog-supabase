@@ -8,6 +8,7 @@ import BlogCardSkeleton from '@/components/BlogCardSkeleton';
 import WelcomeIntro from '@/components/WelcomeIntro';
 import SplitWords from '@/components/SplitWords';
 import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from '@/lib/gsap';
+import { useFeedback } from '@/context/FeedbackContext';
 
 interface Category {
   id: string;
@@ -16,52 +17,106 @@ interface Category {
 
 const DEFAULT_TICKER = ['Fresh reads', 'Deep dives', 'Ideas', 'Insights', 'Stories', 'Read more'];
 
+const PAGE_SIZE = 9;
+
 export default function Home() {
   const [blogs, setBlogs] = useState<BlogCardData[]>([]);
+  const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [heroGo, setHeroGo] = useState(false);
   const page = useRef<HTMLDivElement>(null);
+  const { toast } = useFeedback();
+  const requestId = useRef(0);
 
-  const fetchData = async () => {
+  // Builds one page of results for the current category + search term.
+  const queryBlogs = (offset: number) => {
+    let q = supabase
+      .from('blogs')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    if (selectedCategory) {
+      q = q.eq('category_id', selectedCategory);
+    }
+
+    // Strip characters that have meaning inside a PostgREST filter string.
+    const term = query.replace(/[%_\\,()*"']/g, ' ').trim();
+    if (term) {
+      q = q.or(`title.ilike.%${term}%,description.ilike.%${term}%`);
+    }
+    return q;
+  };
+
+  const loadFirstPage = async () => {
+    const id = ++requestId.current;
     setLoading(true);
     setErrorMsg(null);
 
     try {
-      // 1. Fetch Categories
-      const { data: catData } = await supabase.from('categories').select('*').order('name');
-      if (catData) setCategories(catData);
+      const { data, error, count } = await queryBlogs(0);
+      if (id !== requestId.current) return; // a newer search/filter superseded this one
+      if (error) throw error;
 
-      // 2. Fetch Blogs
-      let query = supabase
-        .from('blogs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (selectedCategory) {
-        query = query.eq('category_id', selectedCategory);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        throw error;
-      }
-
-      if (data) setBlogs(data);
+      setBlogs(data ?? []);
+      setTotal(count ?? data?.length ?? 0);
     } catch (err) {
+      if (id !== requestId.current) return;
       console.error("Error fetching homepage blogs:", err);
       setErrorMsg("Unable to fetch stories. If your database was recently paused, please try refreshing in a moment.");
     } finally {
-      setLoading(false);
+      if (id === requestId.current) setLoading(false);
     }
   };
 
+  const loadMore = async () => {
+    const id = requestId.current;
+    setLoadingMore(true);
+    try {
+      const { data, error, count } = await queryBlogs(blogs.length);
+      if (id !== requestId.current) return;
+      if (error) throw error;
+
+      setBlogs((prev) => {
+        const seen = new Set(prev.map((b) => b.id));
+        return [...prev, ...(data ?? []).filter((b) => !seen.has(b.id))];
+      });
+      if (count != null) setTotal(count);
+    } catch (err) {
+      console.error("Error loading more blogs:", err);
+      toast.error('Could not load more stories. Please try again.');
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // Categories only need fetching once.
   useEffect(() => {
-    fetchData();
+    supabase
+      .from('categories')
+      .select('*')
+      .order('name')
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      });
+  }, []);
+
+  // Debounce the search box so we don't query on every keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(search.trim()), 350);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    loadFirstPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory]);
+  }, [selectedCategory, query]);
 
   // Hero: plays once, timed with the welcome curtain lifting (hidden until then).
   useGSAP(
@@ -107,11 +162,16 @@ export default function Home() {
     () => {
       if (loading || prefersReducedMotion()) return;
 
-      gsap.set('.blog-card-wrap', { autoAlpha: 0, y: 70, scale: 0.96 });
-      ScrollTrigger.batch('.blog-card-wrap', {
+      // Only animate cards that haven't been revealed yet (so "Load more" doesn't replay old ones).
+      const fresh = gsap.utils.toArray<HTMLElement>('.blog-card-wrap:not([data-anim])');
+      if (fresh.length === 0) return;
+
+      gsap.set(fresh, { autoAlpha: 0, y: 70, scale: 0.96 });
+      ScrollTrigger.batch(fresh, {
         start: 'top 90%',
         once: true,
-        onEnter: (batch) =>
+        onEnter: (batch) => {
+          batch.forEach((el) => (el as HTMLElement).setAttribute('data-anim', '1'));
           gsap.to(batch, {
             autoAlpha: 1,
             y: 0,
@@ -120,7 +180,8 @@ export default function Home() {
             ease: 'power3.out',
             stagger: 0.12,
             overwrite: true,
-          }),
+          });
+        },
       });
     },
     { scope: page, dependencies: [loading, blogs], revertOnUpdate: true }
@@ -128,7 +189,8 @@ export default function Home() {
 
   const tickerItems = categories.length > 0 ? categories.map((c) => c.name) : DEFAULT_TICKER;
   const [featured, ...rest] = blogs;
-  const showFeatured = !!featured && blogs.length > 1;
+  const showFeatured = !!featured && blogs.length > 1 && !query;
+  const hasMore = blogs.length < total;
 
   return (
     <div ref={page} className="hero-pending min-h-screen overflow-x-clip bg-background text-foreground transition-colors duration-300">
@@ -192,6 +254,33 @@ export default function Home() {
       </div>
 
       <main id="feed" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+        {/* Search */}
+        <div className="mx-auto mb-8 max-w-xl">
+          <div className="relative">
+            <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" />
+            </svg>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search stories..."
+              aria-label="Search stories"
+              className="w-full rounded-full border-2 border-ink bg-card py-3 pl-12 pr-12 font-semibold text-foreground shadow-[4px_4px_0_var(--ink)] transition-shadow placeholder:text-foreground/40 focus:shadow-[6px_6px_0_var(--primary)] focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full border-2 border-ink bg-accent-2 text-sm font-extrabold text-ink"
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Category Filter */}
         <div className="mb-8 flex flex-wrap justify-center gap-3 sm:mb-12">
           {[{ id: '', name: 'All Topics' }, ...categories].map((cat) => {
@@ -212,13 +301,19 @@ export default function Home() {
           })}
         </div>
 
+        {query && !loading && !errorMsg && (
+          <p className="-mt-6 mb-8 text-center text-sm font-semibold text-foreground/60 sm:-mt-8">
+            {total} {total === 1 ? 'result' : 'results'} for “{query}”
+          </p>
+        )}
+
         {/* Blog Grid */}
         {errorMsg ? (
           <div className="mx-auto max-w-xl rotate-1 rounded-3xl border-2 border-ink bg-card px-6 py-14 text-center shadow-[6px_6px_0_var(--ink)]">
             <h3 className="font-display text-2xl font-extrabold text-foreground">connection hiccup 🔌</h3>
             <p className="mb-6 mt-2 text-sm text-foreground/70">{errorMsg}</p>
             <button
-              onClick={fetchData}
+              onClick={loadFirstPage}
               className="rounded-full border-2 border-ink bg-primary px-6 py-2.5 font-bold text-primary-foreground shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
             >
               Try again
@@ -244,9 +339,41 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="rotate-1 rounded-3xl border-2 border-dashed border-ink bg-card py-24 text-center">
-            <h2 className="font-display text-3xl font-extrabold">nothing here (yet) 👀</h2>
-            <p className="mt-2 text-foreground/60">Try another topic, or publish something fire from the dashboard.</p>
+          <div className="rotate-1 rounded-3xl border-2 border-dashed border-ink bg-card px-6 py-24 text-center">
+            <h2 className="font-display text-3xl font-extrabold">
+              {query ? 'No stories match that search' : 'Nothing here yet'}
+            </h2>
+            <p className="mt-2 text-foreground/60">
+              {query
+                ? 'Try a different keyword, or clear the search.'
+                : 'Try another topic, or publish something new from the dashboard.'}
+            </p>
+            {query && (
+              <button
+                onClick={() => setSearch('')}
+                className="mt-6 rounded-full border-2 border-ink bg-primary px-6 py-2.5 font-bold text-primary-foreground shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)]"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Load more */}
+        {!loading && !errorMsg && blogs.length > 0 && (
+          <div className="mt-14 flex flex-col items-center gap-3">
+            <p className="text-sm font-semibold text-foreground/50">
+              Showing {blogs.length} of {total}
+            </p>
+            {hasMore && (
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="rounded-full border-2 border-ink bg-ink px-8 py-3.5 text-base font-bold text-background shadow-[4px_4px_0_var(--primary)] transition-[translate,box-shadow] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_var(--primary)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:pointer-events-none disabled:opacity-60"
+              >
+                {loadingMore ? 'Loading…' : 'Load more stories'}
+              </button>
+            )}
           </div>
         )}
       </main>

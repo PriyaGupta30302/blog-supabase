@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getCategories, createCategory, deleteCategory } from '@/app/actions';
+import { useFeedback } from '@/context/FeedbackContext';
 
 export default function CategoryManager() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -9,6 +10,7 @@ export default function CategoryManager() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const { toast, confirm } = useFeedback();
 
   useEffect(() => {
     fetchData();
@@ -40,13 +42,20 @@ export default function CategoryManager() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Are you sure you want to delete this category? Blogs using this category will remain, but the category tag will be removed.')) return;
+    const ok = await confirm({
+      title: 'Delete category?',
+      message: 'Blogs using this category will remain, but the category tag will be removed.',
+      confirmText: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
 
     const result = await deleteCategory(id);
     if (result.success) {
+      toast.success('Category deleted.');
       fetchData();
     } else {
-      alert(result.error || 'Failed to delete category');
+      toast.error(result.error || 'Failed to delete category');
     }
   }
 

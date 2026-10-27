@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { supabase } from '@/lib/supabase';
 import { stripHtml } from '@/lib/text-utils';
+import { toOgJpegDataUri } from '@/lib/og-image-utils';
 
 export const alt = 'Blog Story Preview';
 export const size = {
@@ -17,7 +18,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   try {
     const { data: data1 } = await supabase
       .from('blogs')
-      .select('title, description, content, img, author_name, tags')
+      .select('title, description, img, author_name, tags')
       .eq('slug', decodedSlug)
       .maybeSingle();
 
@@ -26,7 +27,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     if (!blog && slug !== decodedSlug) {
       const { data: data2 } = await supabase
         .from('blogs')
-        .select('title, description, content, img, author_name, tags')
+        .select('title, description, img, author_name, tags')
         .eq('slug', slug)
         .maybeSingle();
       blog = data2;
@@ -37,9 +38,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   const title = blog?.title || 'Blog Story';
   const author = blog?.author_name || 'BlogApp Community';
-  const rawDesc = stripHtml(blog?.description || blog?.content || '');
+  const rawDesc = stripHtml(blog?.description || '');
   const description = rawDesc ? (rawDesc.length > 120 ? `${rawDesc.slice(0, 120)}...` : rawDesc) : 'Discover thoughts, ideas, and stories from our community.';
-  const featuredImg = blog?.img && blog.img.startsWith('http') ? blog.img : null;
+  const featuredImg = blog?.img ? await toOgJpegDataUri(blog.img) : null;
   const tag = blog?.tags?.[0] || 'Story';
 
   // If blog has a featured image, render a full-bleed large image banner card (like Amazon product cards)
@@ -102,7 +103,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                   width: '40px',
                   height: '40px',
                   borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                  background: 'linear-gradient(135deg, #00b86b, #00e58a)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -133,7 +134,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 textTransform: 'uppercase',
                 letterSpacing: '1.5px',
                 color: '#ffffff',
-                backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                backgroundColor: '#00b86b',
                 padding: '6px 16px',
                 borderRadius: '20px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
@@ -184,7 +185,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
+                    background: 'linear-gradient(135deg, #00b86b, #0a7d4b)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -225,7 +226,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           justifyContent: 'space-between',
           backgroundColor: '#090d16',
           backgroundImage:
-            'radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.3), transparent 45%), radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.25), transparent 45%)',
+            'radial-gradient(circle at 15% 20%, rgba(0, 184, 107, 0.3), transparent 45%), radial-gradient(circle at 85% 80%, rgba(0, 229, 138, 0.2), transparent 45%)',
           padding: '55px 60px',
           fontFamily: 'sans-serif',
           color: '#ffffff',
@@ -239,14 +240,14 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 width: '44px',
                 height: '44px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                background: 'linear-gradient(135deg, #00b86b, #00e58a)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '22px',
                 fontWeight: 'bold',
                 color: '#ffffff',
-                boxShadow: '0 4px 20px rgba(99, 102, 241, 0.4)',
+                boxShadow: '0 4px 20px rgba(0, 184, 107, 0.4)',
               }}
             >
               B
@@ -262,11 +263,11 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               fontWeight: '700',
               textTransform: 'uppercase',
               letterSpacing: '2px',
-              color: '#c084fc',
-              backgroundColor: 'rgba(192, 132, 252, 0.15)',
+              color: '#5df2b0',
+              backgroundColor: 'rgba(0, 184, 107, 0.15)',
               padding: '6px 18px',
               borderRadius: '20px',
-              border: '1px solid rgba(192, 132, 252, 0.3)',
+              border: '1px solid rgba(0, 184, 107, 0.4)',
             }}
           >
             {tag}
@@ -317,7 +318,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
+                background: 'linear-gradient(135deg, #00b86b, #0a7d4b)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
