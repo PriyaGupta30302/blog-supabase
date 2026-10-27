@@ -136,7 +136,7 @@ export default function Home() {
       <Header />
 
       {/* Hero */}
-      <section className="hero relative mx-auto max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8">
+      <section className="hero relative mx-auto max-w-7xl px-4 pb-12 pt-12 sm:px-6 sm:pb-20 sm:pt-24 lg:px-8">
         <span className="hero-sticker absolute left-2 top-6 hidden -rotate-12 border-2 border-ink bg-accent-2 px-3 py-1.5 text-sm font-extrabold text-ink shadow-[3px_3px_0_var(--ink)] md:block lg:left-10 lg:top-14">
           ✨ Fresh reads
         </span>
@@ -158,14 +158,14 @@ export default function Home() {
           </span>
         </h1>
 
-        <p className="hero-sub mx-auto mt-8 max-w-xl text-center text-lg text-foreground/65 sm:text-xl">
+        <p className="hero-sub mx-auto mt-5 max-w-xl sm:mt-8 text-center text-lg text-foreground/65 sm:text-xl">
           Fresh takes, deep dives and random brain dumps from our community. Scroll, read, vibe.
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:mt-10">
           <a
             href="#feed"
-            className="hero-cta rounded-full border-2 border-ink bg-ink px-7 py-3.5 text-base font-bold text-background shadow-[4px_4px_0_var(--primary)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_var(--primary)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            className="hero-cta rounded-full border-2 border-ink bg-ink px-7 py-3.5 text-base font-bold text-background shadow-[4px_4px_0_var(--primary)] transition-[translate,box-shadow] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_var(--primary)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           >
             Start reading ↓
           </a>
@@ -191,9 +191,9 @@ export default function Home() {
         </div>
       </div>
 
-      <main id="feed" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <main id="feed" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         {/* Category Filter */}
-        <div className="mb-12 flex flex-wrap justify-center gap-3">
+        <div className="mb-8 flex flex-wrap justify-center gap-3 sm:mb-12">
           {[{ id: '', name: 'All Topics' }, ...categories].map((cat) => {
             const active = selectedCategory === cat.id;
             return (
