@@ -12,7 +12,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('blue');
+  const [theme, setThemeState] = useState<Theme>('green');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('app-theme') as Theme;

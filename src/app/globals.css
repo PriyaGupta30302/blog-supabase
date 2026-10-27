@@ -3,17 +3,25 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Default "Electric Blue" theme on warm paper */
-  --primary: #3b5bff;
-  --primary-hover: #2a45e0;
-  --primary-light: #e3e8ff;
-  --primary-foreground: #ffffff;
+  /* Default "Mint Fresh" theme on warm paper */
+  --primary: #00b86b;
+  --primary-hover: #009a58;
+  --primary-light: #d9f7e8;
+  --primary-foreground: #04170d;
   --background: #f6f1e7;
   --foreground: #14110f;
   --card-bg: #fffdf8;
   --card-border: #e4dccb;
   --muted: #eee7d8;
   --ink: #14110f;
+  --accent-2: #ff8fb1;
+}
+
+[data-theme='blue'] {
+  --primary: #3b5bff;
+  --primary-hover: #2a45e0;
+  --primary-light: #e3e8ff;
+  --primary-foreground: #ffffff;
   --accent-2: #ffd23f;
 }
 

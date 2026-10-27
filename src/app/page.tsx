@@ -14,7 +14,7 @@ interface Category {
   name: string;
 }
 
-const DEFAULT_TICKER = ['fresh drops', 'hot takes', 'deep dives', 'no cap', 'vibes only', 'read me'];
+const DEFAULT_TICKER = ['Fresh reads', 'Deep dives', 'Ideas', 'Insights', 'Stories', 'Read more'];
 
 export default function Home() {
   const [blogs, setBlogs] = useState<BlogCardData[]>([]);
@@ -135,13 +135,13 @@ export default function Home() {
       {/* Hero */}
       <section className="hero relative mx-auto max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8">
         <span className="hero-sticker absolute left-2 top-6 hidden -rotate-12 border-2 border-ink bg-accent-2 px-3 py-1.5 text-sm font-extrabold text-ink shadow-[3px_3px_0_var(--ink)] md:block lg:left-10 lg:top-14">
-          ✨ fresh drops
+          ✨ Fresh reads
         </span>
         <span className="hero-sticker absolute right-2 top-24 hidden rotate-6 rounded-full border-2 border-ink bg-card px-4 py-2 text-sm font-extrabold shadow-[3px_3px_0_var(--ink)] md:block lg:right-10">
           📚 {blogs.length || '∞'} stories
         </span>
         <span className="hero-sticker absolute bottom-16 right-[18%] hidden rotate-[-5deg] border-2 border-ink bg-primary px-3 py-1.5 text-sm font-extrabold text-primary-foreground shadow-[3px_3px_0_var(--ink)] lg:block">
-          no cap
+          Curated
         </span>
 
         <h1 className="mx-auto max-w-5xl text-center font-display text-[clamp(3rem,10vw,8.5rem)] font-extrabold leading-[0.92] tracking-tight">

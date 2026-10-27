@@ -80,10 +80,7 @@ export default function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
     >
       <div className="relative px-6 text-center font-display font-extrabold leading-[0.95] tracking-tight text-[clamp(2.75rem,10vw,8rem)]">
         <div className="overflow-hidden pb-2">
-          <div className="intro-line">hey bestie</div>
-        </div>
-        <div className="overflow-hidden pb-2">
-          <div className="intro-line">welcome to</div>
+          <div className="intro-line">Welcome to</div>
         </div>
         <div className="overflow-hidden pb-2">
           <div className="intro-line">
@@ -92,12 +89,17 @@ export default function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
             </span>
           </div>
         </div>
+        <div className="overflow-hidden pt-4 pb-2">
+          <div className="intro-line text-[clamp(1.1rem,3vw,2rem)] font-semibold tracking-normal">
+            Stories and ideas worth reading.
+          </div>
+        </div>
 
         <span className="intro-sticker absolute -left-2 top-0 hidden rotate-[-12deg] border-2 border-ink bg-accent-2 px-3 py-1 text-base font-bold text-ink shadow-[3px_3px_0_var(--ink)] sm:block md:-left-16">
-          ✨ new drops
+          ✨ Fresh reads
         </span>
         <span className="intro-sticker absolute -right-2 bottom-4 hidden rotate-[8deg] border-2 border-ink bg-background px-3 py-1 text-base font-bold text-foreground shadow-[3px_3px_0_var(--ink)] sm:block md:-right-20">
-          no cap
+          Curated
         </span>
       </div>
 
