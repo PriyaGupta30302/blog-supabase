@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useMemo, useRef } from 'react';
-import DOMPurify from "isomorphic-dompurify";
+import React, { useRef } from 'react';
 import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from '@/lib/gsap';
 
 interface BlogContentProps {
-  htmlContent: string;
+  /** HTML that has ALREADY been sanitized on the server with `sanitizeBlogHtml`. */
+  safeHtml: string;
 }
 
-export default function BlogContent({ htmlContent }: BlogContentProps) {
+export default function BlogContent({ safeHtml }: BlogContentProps) {
   const article = useRef<HTMLElement>(null);
-  const sanitizedContent = useMemo(() => {
-    return DOMPurify.sanitize(htmlContent);
-  }, [htmlContent]);
 
   // Animations live here (not in the page wrapper) because this component only
   // mounts once the auth guard lets the article through.
@@ -66,7 +63,7 @@ export default function BlogContent({ htmlContent }: BlogContentProps) {
         });
       });
     },
-    { scope: article, dependencies: [sanitizedContent], revertOnUpdate: true }
+    { scope: article, dependencies: [safeHtml], revertOnUpdate: true }
   );
 
   return (
@@ -83,7 +80,7 @@ export default function BlogContent({ htmlContent }: BlogContentProps) {
         prose-ol:list-decimal prose-ol:pl-6
         prose-li:text-foreground/80 prose-li:my-2
         prose-hr:my-10"
-      dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+      dangerouslySetInnerHTML={{ __html: safeHtml }}
     />
   );
 }

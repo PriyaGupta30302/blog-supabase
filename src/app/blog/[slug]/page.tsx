@@ -14,6 +14,7 @@ import { stripHtml, readingTime } from "@/lib/text-utils";
 import DetailFX from "@/components/DetailFX";
 import SplitWords from "@/components/SplitWords";
 import { getSiteUrl } from "@/lib/site";
+import { sanitizeBlogHtml } from "@/lib/sanitize";
 
 export const dynamic = 'force-dynamic';
 
@@ -251,7 +252,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
           {/* Blog Content: public. Liking and commenting still ask for sign-in. */}
           <div data-reveal className="d-hide mb-16 rounded-3xl border-2 border-ink bg-card p-6 shadow-[8px_8px_0_var(--ink)] sm:p-10 md:p-14">
-            <BlogContent htmlContent={blog.description || ''} />
+            <BlogContent safeHtml={sanitizeBlogHtml(blog.description || '')} />
           </div>
 
           {/* Comment Section */}

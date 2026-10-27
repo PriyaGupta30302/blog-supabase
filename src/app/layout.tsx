@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 // Runs before first paint so a saved theme never flashes the default (mint) first.
-const themeInitScript = `(function(){try{var t=localStorage.getItem('app-theme');if(t){var r=document.documentElement;r.setAttribute('data-theme',t);if(t==='dark'){r.classList.add('dark');}}}catch(e){}})();`;
+const themeInitScript = `(function(){try{var t=localStorage.getItem('app-theme-v2');if(t){var r=document.documentElement;r.setAttribute('data-theme',t);if(t==='dark'){r.classList.add('dark');}}}catch(e){}})();`;
 
 export default function RootLayout({
   children,

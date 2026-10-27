@@ -2,6 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
+// Bumped from 'app-theme' so every visitor starts on the Mint default once;
+// their own choice is saved under this key from then on.
+export const THEME_STORAGE_KEY = 'app-theme-v2';
+
 type Theme = 'blue' | 'green' | 'rose' | 'violet' | 'amber' | 'dark';
 
 interface ThemeContextType {
@@ -15,7 +19,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('green');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('app-theme') as Theme;
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme;
     if (savedTheme) {
       setThemeState(savedTheme);
       applyTheme(savedTheme);
@@ -39,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem('app-theme', newTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, newTheme);
     applyTheme(newTheme);
   };
 
