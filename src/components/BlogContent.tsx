@@ -73,7 +73,7 @@ export default function BlogContent({ htmlContent }: BlogContentProps) {
     <article
       ref={article}
       data-prose
-      className="story prose prose-lg dark:prose-invert max-w-none break-words overflow-x-hidden
+      className="story prose prose-lg dark:prose-invert max-w-none break-words
         prose-headings:font-display prose-headings:text-foreground prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:mb-4 prose-headings:mt-12 first:prose-headings:mt-0
         prose-p:text-foreground/80 prose-p:leading-[1.85] prose-p:my-5
         prose-a:text-foreground prose-a:font-bold prose-a:underline prose-a:decoration-primary prose-a:decoration-4 prose-a:underline-offset-4 hover:prose-a:bg-primary hover:prose-a:text-primary-foreground

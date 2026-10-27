@@ -17,34 +17,23 @@ export default function AdminPage() {
   const router = useRouter();
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [initialLoading, setInitialLoading] = useState(true);
 
   const isAdmin = checkAdmin(user);
 
   useEffect(() => {
-    // Show PageLoader for first 800ms
-    const timer = setTimeout(() => {
-      setInitialLoading(false);
-    }, 800);
-
     async function fetchBlogs() {
-      const [result] = await Promise.all([
-        supabase
-          .from('blogs')
-          .select('*')
-          .order('created_at', { ascending: false }),
-        new Promise(resolve => setTimeout(resolve, 1600)) // PageLoader(800) + Skeleton(800)
-      ]);
+      const { data } = await supabase
+        .from('blogs')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      if (result.data) setBlogs(result.data);
+      if (data) setBlogs(data);
       setLoading(false);
     }
 
     if (userLoaded) {
       fetchBlogs();
     }
-
-    return () => clearTimeout(timer);
   }, [userLoaded]);
 
   useEffect(() => {
@@ -53,7 +42,7 @@ export default function AdminPage() {
     }
   }, [userLoaded, user, router]);
 
-  if (!userLoaded || initialLoading || (userLoaded && !user)) {
+  if (!userLoaded || (userLoaded && !user)) {
     return <PageLoader />;
   }
 
