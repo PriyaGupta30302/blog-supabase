@@ -131,33 +131,34 @@ export default function SignInPage() {
     <div className="min-h-screen bg-background transition-colors duration-300">
       <Header />
       <div className="flex flex-col items-center justify-center py-20 px-4">
-        <div className="w-full max-w-lg bg-card rounded-3xl shadow-2xl p-10 border border-card-border transition-all animate-in fade-in zoom-in duration-500">
+        <div className="w-full max-w-lg bg-card rounded-3xl p-8 sm:p-10 border-2 border-ink shadow-[8px_8px_0_var(--ink)] transition-all animate-in fade-in zoom-in duration-500">
           {/* Required for Clerk Smart CAPTCHA - Stable div outside the card contents to prevent unmounting/re-initialization */}
           <div id="clerk-captcha" className="flex justify-center mb-4"></div>
 
           {!isLoaded || !userLoaded ? (
             <div className="animate-pulse space-y-8 mt-4">
               <div className="space-y-3 text-center">
-                <div className="h-10 bg-muted rounded-2xl w-3/4 mx-auto"></div>
-                <div className="h-4 bg-muted rounded-2xl w-1/2 mx-auto"></div>
+                <div className="h-10 bg-muted border-2 border-ink/10 rounded-2xl w-3/4 mx-auto"></div>
+                <div className="h-4 bg-muted border-2 border-ink/10 rounded-2xl w-1/2 mx-auto"></div>
               </div>
               <div className="space-y-4">
-                <div className="h-14 bg-muted rounded-2xl w-full"></div>
-                <div className="h-14 bg-muted rounded-2xl w-full"></div>
+                <div className="h-14 bg-muted border-2 border-ink/10 rounded-2xl w-full"></div>
+                <div className="h-14 bg-muted border-2 border-ink/10 rounded-2xl w-full"></div>
                 <div className="h-14 bg-primary/20 rounded-2xl w-full"></div>
               </div>
             </div>
           ) : (
             <div className="animate-in fade-in duration-500">
               <div className="mb-10 text-center">
-                <h1 className="text-4xl font-black text-foreground tracking-tight mb-2 text-center">
+                <span className="mb-4 inline-block -rotate-3 border-2 border-ink bg-accent-2 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-ink shadow-[3px_3px_0_var(--ink)]">✨ BlogApp</span>
+                <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-foreground tracking-tight mb-2 text-center">
                   {isResetting ? (
                     <>Reset <span className="text-primary">Password</span></>
                   ) : (
                     <>Welcome <span className="text-primary">Back</span></>
                   )}
                 </h1>
-                <p className="text-foreground/50 font-medium italic">
+                <p className="text-foreground/60 font-medium">
                   {isResetting 
                     ? (resetStep === 'email' ? 'Enter your email to receive a code' : 'Check your inbox for the reset code')
                     : 'Sign in to continue your creative journey'}
@@ -169,7 +170,7 @@ export default function SignInPage() {
                   <button
                     type="button"
                     onClick={signInWithGoogle}
-                    className="w-full py-4 bg-muted border border-card-border rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-card-border/20 transition-all shadow-sm group"
+                    className="w-full py-4 bg-card rounded-full flex items-center justify-center gap-3 font-bold transition-all group border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -185,9 +186,9 @@ export default function SignInPage() {
                   
                   <div className="relative mt-8">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-card-border"></div>
+                      <div className="w-full border-t-2 border-ink/15"></div>
                     </div>
-                    <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest text-foreground/20 bg-card px-4 mx-auto w-fit">
+                    <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest text-foreground/40 bg-card px-4 mx-auto w-fit">
                       Or use email
                     </div>
                   </div>
@@ -195,7 +196,7 @@ export default function SignInPage() {
               )}
 
               {error && (
-                <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-sm font-medium flex items-center animate-shake">
+                <div className="mb-8 p-4 bg-red-500/10 border-2 border-red-500 text-red-500 rounded-2xl text-sm font-medium flex items-center animate-shake">
                   <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
@@ -212,7 +213,7 @@ export default function SignInPage() {
                         type="email"
                         value={emailAddress}
                         onChange={(e) => setEmailAddress(e.target.value)}
-                        className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
+                        className="w-full p-4 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-2xl text-foreground transition-all placeholder:text-foreground/20"
                         placeholder="you@example.com"
                         autoComplete="username"
                         required
@@ -224,7 +225,7 @@ export default function SignInPage() {
                         <button 
                           type="button"
                           onClick={() => toggleResetMode(true)}
-                          className="text-xs font-bold text-primary hover:text-primary-hover transition-colors"
+                          className="text-xs font-bold text-foreground underline decoration-primary decoration-2 underline-offset-2"
                         >
                           Forgot?
                         </button>
@@ -234,7 +235,7 @@ export default function SignInPage() {
                           type={showPassword ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20 pr-12"
+                          className="w-full p-4 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-2xl text-foreground transition-all placeholder:text-foreground/20 pr-12"
                           placeholder="••••••••••••"
                           autoComplete="current-password"
                           required
@@ -267,7 +268,7 @@ export default function SignInPage() {
                           type="email"
                           value={emailAddress}
                           onChange={(e) => setEmailAddress(e.target.value)}
-                          className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20"
+                          className="w-full p-4 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-2xl text-foreground transition-all placeholder:text-foreground/20"
                           placeholder="you@example.com"
                           autoComplete="username"
                           required
@@ -284,7 +285,7 @@ export default function SignInPage() {
                             type="text"
                             value={resetCode}
                             onChange={(e) => setResetCode(e.target.value)}
-                            className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/30 font-mono tracking-widest text-center"
+                            className="w-full p-4 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-2xl text-foreground transition-all placeholder:text-foreground/30 font-mono tracking-widest text-center"
                             placeholder="000000"
                             autoComplete="one-time-code"
                             required
@@ -297,7 +298,7 @@ export default function SignInPage() {
                               type={showPassword ? "text" : "password"}
                               value={newPassword}
                               onChange={(e) => setNewPassword(e.target.value)}
-                              className="w-full p-4 bg-muted border border-card-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground transition-all placeholder:text-foreground/20 pr-12"
+                              className="w-full p-4 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-2xl text-foreground transition-all placeholder:text-foreground/20 pr-12"
                               placeholder="••••••••••••"
                               autoComplete="new-password"
                               required
@@ -335,7 +336,7 @@ export default function SignInPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-full py-4 bg-primary text-primary-foreground font-black rounded-full transition-all border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">
@@ -349,9 +350,9 @@ export default function SignInPage() {
                     isResetting ? (resetStep === 'email' ? 'Send Reset Code' : 'Reset Password') : 'Log In'
                   )}
                 </button>
-                <div className="text-center mt-8 pt-6 border-t border-card-border">
+                <div className="text-center mt-8 pt-6 border-t-2 border-ink/15">
                   <span className="text-foreground/40 text-sm font-medium">Don't have an account? </span>
-                  <a href="/sign-up" className="text-primary hover:text-primary-hover hover:underline text-sm font-bold transition-colors">Sign Up</a>
+                  <a href="/sign-up" className="text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:bg-primary hover:text-primary-foreground text-sm font-bold transition-colors">Sign Up</a>
                 </div>
               </form>
             </div>

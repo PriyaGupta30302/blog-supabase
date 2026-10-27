@@ -19,7 +19,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
   const isUserAdmin = isAdmin(user);
   
   if (!isLoaded) {
-    return <div className="flex items-center justify-center p-12 bg-card rounded-2xl border border-card-border"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div></div>;
+    return <div className="flex items-center justify-center p-12 bg-card rounded-2xl border-2 border-ink"><div className="animate-spin rounded-full h-8 w-8 border-4 border-ink border-t-primary"></div></div>;
   }
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.description || initialData?.content || '');
@@ -115,13 +115,13 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-card p-8 rounded-2xl shadow-lg border border-card-border transition-colors">
-      <h2 className="text-2xl font-bold text-foreground mb-6">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 sm:p-8 rounded-3xl border-2 border-ink shadow-[8px_8px_0_var(--ink)] transition-colors">
+      <h2 className="font-display text-3xl font-extrabold tracking-tight text-foreground mb-6">
         {initialData ? 'Edit Blog' : 'Create New Blog'}
       </h2>
       
       {!isUserAdmin && (
-        <div className="mb-8 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-500 rounded-lg flex items-center animate-in slide-in-from-top duration-300">
+        <div className="mb-8 p-4 bg-red-500/10 border-2 border-red-500 text-red-500 rounded-2xl flex items-center animate-in slide-in-from-top duration-300">
           <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -130,7 +130,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
       )}
       
       {error && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 rounded-md text-sm">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 text-red-700 dark:text-red-400 rounded-2xl font-semibold text-sm">
           {error}
         </div>
       )}
@@ -142,7 +142,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all font-semibold"
+            className="w-full p-3 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-xl text-foreground transition-all font-semibold"
             placeholder="A compelling title..."
             required
           />
@@ -150,7 +150,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
 
         <div>
           <label className="block text-sm font-semibold text-foreground/70 mb-2">URL Slug (Auto-generated)</label>
-          <div className="w-full p-3 bg-muted border border-card-border rounded-xl text-foreground/40 flex items-center overflow-hidden">
+          <div className="w-full p-3 bg-muted border-2 border-dashed border-ink/40 rounded-xl text-foreground/50 flex items-center overflow-hidden">
             <span className="text-foreground/30 mr-2 shrink-0">/blog/</span>
             <span className="truncate">
               {title
@@ -169,7 +169,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all"
+            className="w-full p-3 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-xl text-foreground transition-all"
             placeholder="Your name or pen name"
             required
           />
@@ -180,7 +180,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all appearance-none"
+            className="w-full p-3 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-xl text-foreground transition-all appearance-none"
           >
             <option value="">Uncategorized</option>
             {categories.map((cat) => (
@@ -193,12 +193,12 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-semibold text-foreground/70 mb-2">Publishing Status</label>
-          <div className="flex bg-muted p-1 rounded-xl w-fit">
+          <div className="flex bg-muted p-1 rounded-full w-fit border-2 border-ink">
             <button
               type="button"
               onClick={() => setStatus('draft')}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                status === 'draft' ? 'bg-background text-primary shadow-sm' : 'text-foreground/40'
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                status === 'draft' ? 'bg-primary text-primary-foreground' : 'text-foreground/40'
               }`}
             >
               Draft
@@ -206,8 +206,8 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             <button
               type="button"
               onClick={() => setStatus('published')}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                status === 'published' ? 'bg-background text-primary shadow-sm' : 'text-foreground/40'
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                status === 'published' ? 'bg-primary text-primary-foreground' : 'text-foreground/40'
               }`}
             >
               Published
@@ -220,8 +220,8 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
         <div>
           <label className="block text-sm font-semibold text-foreground/70 mb-2">Featured Image</label>
           <div className="relative group/img">
-            <label className={`block cursor-pointer border-2 border-dashed rounded-xl overflow-hidden transition-all duration-300 min-h-[160px] relative ${
-              (imageUrl || imageFile) ? 'border-primary bg-background' : 'border-card-border bg-background hover:border-primary/50'
+            <label className={`block cursor-pointer border-2 border-dashed rounded-2xl overflow-hidden transition-all duration-300 min-h-[160px] relative ${
+              (imageUrl || imageFile) ? 'border-ink bg-background' : 'border-ink/40 bg-background hover:border-ink'
             }`}>
               <input
                 type="file"
@@ -259,7 +259,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             </label>
             {(imageFile) && (
               <div className="absolute top-2 right-2 z-10">
-                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full shadow-md">
+                <span className="bg-accent-2 text-ink border-2 border-ink text-[10px] font-extrabold px-2 py-1 rounded-full">
                   NEW
                 </span>
               </div>
@@ -273,7 +273,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
             type="text"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            className="w-full p-3 bg-background border border-card-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all"
+            className="w-full p-3 bg-card border-2 border-ink shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none rounded-xl text-foreground transition-all"
             placeholder="Nextjs, Tech, Lifestyle"
           />
         </div>
@@ -281,7 +281,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
 
       <div>
         <label className="block text-sm font-semibold text-foreground/70 mb-2">Content</label>
-        <div className="border border-card-border rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary transition-all">
+        <div className="border-2 border-ink rounded-2xl overflow-hidden shadow-[3px_3px_0_var(--ink)] focus-within:shadow-[4px_4px_0_var(--primary)] transition-all">
           <RichTextEditor 
             onContentChange={handleContentChange} 
             initialContent={content}
@@ -292,7 +292,7 @@ export default function BlogForm({ onSuccess, initialData }: { onSuccess?: () =>
       <button
         type="submit"
         disabled={loading}
-        className={`w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-primary/20 hover:bg-primary-hover active:scale-[0.98] transition-all transform ${
+        className={`w-full py-4 bg-primary text-primary-foreground font-bold rounded-full transition-all border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
           loading ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >

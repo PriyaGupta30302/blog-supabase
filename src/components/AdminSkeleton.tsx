@@ -3,10 +3,10 @@ import Skeleton from './Skeleton';
 
 export default function AdminSkeleton() {
   return (
-    <div className="bg-card rounded-3xl shadow-lg border border-card-border overflow-hidden">
+    <div className="bg-card rounded-3xl border-2 border-ink shadow-[6px_6px_0_var(--ink)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-muted border-b border-card-border">
+          <thead className="bg-primary-light border-b-2 border-ink">
             <tr>
               <th className="px-8 py-5"><Skeleton width="100px" height="12px" /></th>
               <th className="px-8 py-5"><Skeleton width="80px" height="12px" /></th>
@@ -14,7 +14,7 @@ export default function AdminSkeleton() {
               <th className="px-8 py-5"><Skeleton width="80px" height="12px" /></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-card-border">
+          <tbody className="divide-y-2 divide-ink/10">
             {[1, 2, 3, 4, 5].map((i) => (
               <tr key={i}>
                 <td className="px-8 py-6">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from '@/lib/gsap';
+import { gsap, useGSAP, prefersReducedMotion } from '@/lib/gsap';
 
 /**
  * Client wrapper that choreographs the blog detail page. The server page marks
@@ -54,15 +54,6 @@ export default function DetailFX({ children }: { children: React.ReactNode }) {
           ease: 'power3.out',
           scrollTrigger: { trigger: section, start: 'top 88%', once: true },
         });
-      });
-
-      // Article blocks stagger in as you read
-      gsap.set('[data-prose] > *', { opacity: 0, y: 28 });
-      ScrollTrigger.batch('[data-prose] > *', {
-        start: 'top 92%',
-        once: true,
-        onEnter: (batch) =>
-          gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out', stagger: 0.08, overwrite: true }),
       });
     },
     { scope: root }

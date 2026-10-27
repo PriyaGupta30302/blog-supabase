@@ -61,7 +61,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
   return (
     <>
       {actionError && (
-        <div className="mb-6 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-500 rounded-lg flex items-center animate-in slide-in-from-top duration-300">
+        <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500 text-red-500 rounded-2xl flex items-center animate-in slide-in-from-top duration-300">
           <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -78,23 +78,23 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
           </button>
         </div>
       )}
-      <div className="bg-card rounded-3xl shadow-lg border border-card-border overflow-hidden transition-colors">
+      <div className="bg-card rounded-3xl border-2 border-ink shadow-[6px_6px_0_var(--ink)] overflow-hidden transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-muted border-b border-card-border">
+            <thead className="bg-primary-light border-b-2 border-ink">
               <tr>
-                <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Blog Post</th>
-                <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Author</th>
-                <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Date</th>
-                <th className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">Actions</th>
+                <th className="px-8 py-5 text-xs font-extrabold text-foreground/70 uppercase tracking-widest">Blog Post</th>
+                <th className="px-8 py-5 text-xs font-extrabold text-foreground/70 uppercase tracking-widest">Author</th>
+                <th className="px-8 py-5 text-xs font-extrabold text-foreground/70 uppercase tracking-widest">Date</th>
+                <th className="px-8 py-5 text-xs font-extrabold text-foreground/70 uppercase tracking-widest">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-card-border">
+            <tbody className="divide-y-2 divide-ink/10">
               {blogs.map((blog) => (
-                <tr key={blog.id} className="hover:bg-muted/50 transition duration-200 group">
+                <tr key={blog.id} className="hover:bg-primary-light/50 transition duration-200 group">
                   <td className="px-8 py-6">
                     <div className="flex items-center">
-                      <div className="h-12 w-16 bg-muted rounded-lg mr-4 overflow-hidden flex-shrink-0 border border-card-border">
+                      <div className="h-12 w-16 bg-muted rounded-lg mr-4 overflow-hidden flex-shrink-0 border-2 border-ink">
                         {blog.img ? (
                           <img src={blog.img} alt="" className="w-full h-full object-cover" />
                         ) : (
@@ -102,14 +102,14 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                         )}
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-foreground group-hover:text-primary transition duration-200 line-clamp-1">{blog.title}</div>
+                        <div className="text-sm font-bold text-foreground transition duration-200 line-clamp-1">{blog.title}</div>
                         <div className="text-xs text-foreground/40 mt-1">{blog.tags?.join(' • ') || 'No tags'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex items-center">
-                      <div className="h-7 w-7 rounded-full bg-primary-light flex items-center justify-center text-[10px] font-bold text-primary mr-2">
+                      <div className="h-7 w-7 rounded-full border-2 border-ink bg-accent-2 flex items-center justify-center text-[10px] font-extrabold text-ink mr-2">
                         {blog.author_name?.[0] || 'A'}
                       </div>
                       <span className="text-sm font-medium text-foreground/70">{blog.author_name || 'Admin'}</span>
@@ -122,7 +122,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                     <div className="flex items-center space-x-3">
                       <Link 
                         href={`/blog/${blog.slug}`}
-                        className="inline-flex items-center px-4 py-2 bg-primary-light text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium text-sm group"
+                        className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-full border-2 border-ink shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 transition-all font-medium text-sm group"
                         title="View"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                         onClick={() => {
                           router.push(`/admin/edit/${blog.id}`);
                         }}
-                        className="p-2 text-foreground/40 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition"
+                        className="p-2 text-foreground/60 hover:text-ink hover:bg-accent-2 border-2 border-transparent hover:border-ink rounded-full transition"
                         title="Edit"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function AdminBlogList({ initialBlogs }: { initialBlogs: Blog[] }
                       <button 
                         onClick={() => handleDelete(blog)}
                         disabled={loading === blog.id}
-                        className="p-2 text-foreground/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                        className="p-2 text-foreground/60 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 border-2 border-transparent hover:border-ink rounded-full transition"
                         title="Delete"
                       >
                         {loading === blog.id ? (

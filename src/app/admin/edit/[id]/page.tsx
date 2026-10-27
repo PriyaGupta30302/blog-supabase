@@ -40,7 +40,7 @@ export default function EditBlogPage() {
       <div className="min-h-screen bg-background transition-colors duration-300">
         <Header />
         <div className="flex items-center justify-center h-[calc(100vh-80px)]">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-ink border-t-primary"></div>
         </div>
       </div>
     );
@@ -53,7 +53,7 @@ export default function EditBlogPage() {
         <div className="mb-8">
           <button 
             onClick={() => router.push('/admin')}
-            className="flex items-center text-foreground/60 hover:text-primary transition-colors"
+            className="inline-flex items-center gap-1 bg-card text-foreground px-5 py-2 rounded-full font-bold text-sm transition-all border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

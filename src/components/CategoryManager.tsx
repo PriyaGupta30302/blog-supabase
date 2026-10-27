@@ -51,8 +51,8 @@ export default function CategoryManager() {
   }
 
   return (
-    <div className="bg-card rounded-2xl border border-card-border p-6 shadow-sm">
-      <h2 className="text-xl font-bold mb-6">Manage Categories</h2>
+    <div className="bg-card rounded-3xl border-2 border-ink p-6 shadow-[6px_6px_0_var(--ink)]">
+      <h2 className="font-display text-2xl font-extrabold mb-6">Manage Categories</h2>
 
       {/* Add Category Form */}
       <form onSubmit={handleAdd} className="flex gap-2 mb-8">
@@ -61,13 +61,13 @@ export default function CategoryManager() {
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="New category name (e.g. Technology)"
-          className="flex-1 bg-background border border-card-border rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+          className="flex-1 bg-card border-2 border-ink rounded-xl px-4 py-2 shadow-[3px_3px_0_var(--ink)] focus:shadow-[4px_4px_0_var(--primary)] focus:outline-none"
           disabled={submitting}
         />
         <button
           type="submit"
           disabled={submitting || !newCategory.trim()}
-          className="bg-primary text-primary-foreground px-6 py-2 rounded-xl font-bold hover:opacity-90 transition-all disabled:opacity-50"
+          className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-bold transition-all disabled:opacity-50 border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
         >
           {submitting ? 'Adding...' : 'Add'}
         </button>
@@ -85,7 +85,7 @@ export default function CategoryManager() {
           <p className="text-foreground/60 italic">No categories yet. Add your first one above!</p>
         ) : (
           categories.map((cat) => (
-            <div key={cat.id} className="flex items-center justify-between p-3 bg-background rounded-xl border border-card-border group">
+            <div key={cat.id} className="flex items-center justify-between p-3 bg-background rounded-xl border-2 border-ink/20 hover:border-ink transition-colors group">
               <span className="font-medium">{cat.name}</span>
               <button
                 onClick={() => handleDelete(cat.id)}
