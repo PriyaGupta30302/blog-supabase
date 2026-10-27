@@ -22,7 +22,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [introDone, setIntroDone] = useState(false);
+  const [heroGo, setHeroGo] = useState(false);
   const page = useRef<HTMLDivElement>(null);
 
   const fetchData = async () => {
@@ -63,10 +63,13 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory]);
 
-  // Hero: plays once the welcome curtain has lifted.
+  // Hero: plays once, timed with the welcome curtain lifting (hidden until then).
   useGSAP(
     () => {
-      if (!introDone || prefersReducedMotion()) return;
+      if (!heroGo) return;
+      // Un-hide first so the tweens below read the visible end state.
+      page.current?.classList.remove('hero-pending');
+      if (prefersReducedMotion()) return;
 
       const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
       tl.from('.hero-word', { yPercent: 115, rotation: 5, duration: 1, stagger: 0.09 })
@@ -95,7 +98,7 @@ export default function Home() {
         scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
       });
     },
-    { scope: page, dependencies: [introDone] }
+    { scope: page, dependencies: [heroGo] }
   );
 
   // Cards: staggered scroll-in, re-run whenever the list changes.
@@ -128,8 +131,8 @@ export default function Home() {
   const showFeatured = !!featured && blogs.length > 1;
 
   return (
-    <div ref={page} className="min-h-screen overflow-x-clip bg-background text-foreground transition-colors duration-300">
-      <WelcomeIntro onComplete={() => setIntroDone(true)} />
+    <div ref={page} className="hero-pending min-h-screen overflow-x-clip bg-background text-foreground transition-colors duration-300">
+      <WelcomeIntro onReveal={() => setHeroGo(true)} />
       <Header />
 
       {/* Hero */}

@@ -361,3 +361,12 @@ body::before {
     transition: none;
   }
 }
+
+/* Home hero: stay hidden until GSAP starts it, so it only ever animates in once */
+.hero-pending .hero-word,
+.hero-pending .hero-hit,
+.hero-pending .hero-sub,
+.hero-pending .hero-cta,
+.hero-pending .hero-sticker {
+  opacity: 0;
+}

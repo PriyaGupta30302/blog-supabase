@@ -6,15 +6,15 @@ import { gsap, useGSAP, prefersReducedMotion } from '@/lib/gsap';
 const SEEN_KEY = 'blogapp-intro-seen';
 
 interface WelcomeIntroProps {
-  /** Fired once the curtain has lifted (or immediately if the intro is skipped). */
-  onComplete: () => void;
+  /** Fired the moment the curtain starts lifting (or immediately if the intro is skipped). */
+  onReveal: () => void;
 }
 
 /**
  * Full-screen welcome curtain. Plays once per browser session, then lifts to
  * reveal the page underneath. Skipped for repeat visits and reduced-motion users.
  */
-export default function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
+export default function WelcomeIntro({ onReveal }: WelcomeIntroProps) {
   const root = useRef<HTMLDivElement>(null);
   const [skipped, setSkipped] = useState(false);
 
@@ -26,7 +26,7 @@ export default function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
     } catch {}
     if (seen || prefersReducedMotion()) {
       setSkipped(true);
-      onComplete();
+      onReveal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -41,7 +41,6 @@ export default function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
             sessionStorage.setItem(SEEN_KEY, '1');
           } catch {}
           setSkipped(true);
-          onComplete();
         },
       });
 
@@ -65,7 +64,8 @@ export default function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
           ease: 'power3.in',
           stagger: 0.05,
         }, '+=0.25')
-        .to(root.current, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' }, '-=0.2');
+        .add(() => onReveal(), '-=0.2')
+        .to(root.current, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' }, '<');
     },
     { scope: root, dependencies: [skipped] }
   );
