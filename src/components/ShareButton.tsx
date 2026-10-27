@@ -139,7 +139,7 @@ export default function ShareButton({
         <button
           onClick={toggleDropdown}
           title="Share story"
-          className={`p-2.5 rounded-full bg-card hover:bg-muted text-foreground/70 hover:text-primary border border-card-border transition-all duration-200 shadow-sm active:scale-95 flex items-center justify-center ${className}`}
+          className={`p-2.5 rounded-full bg-card text-foreground border-2 border-ink shadow-[2px_2px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--ink)] hover:bg-accent-2 transition-all duration-200 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center ${className}`}
           aria-label="Share"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,7 +149,7 @@ export default function ShareButton({
       ) : variant === 'compact' ? (
         <button
           onClick={toggleDropdown}
-          className={`px-3 py-1.5 rounded-xl bg-card hover:bg-muted text-xs font-semibold text-foreground/70 hover:text-primary border border-card-border transition-all duration-200 shadow-sm flex items-center space-x-1.5 active:scale-95 ${className}`}
+          className={`px-3 py-1.5 rounded-full bg-card text-xs font-bold text-foreground border-2 border-ink shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 transition-all duration-200 flex items-center space-x-1.5 active:scale-95 ${className}`}
         >
           <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -159,7 +159,7 @@ export default function ShareButton({
       ) : (
         <button
           onClick={toggleDropdown}
-          className={`px-4 py-2.5 rounded-xl bg-card hover:bg-muted text-sm font-semibold text-foreground hover:text-primary border border-card-border shadow-sm transition-all duration-200 flex items-center space-x-2 active:scale-95 ${className}`}
+          className={`px-5 py-2.5 rounded-full bg-card text-sm font-bold text-foreground border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] transition-all duration-200 flex items-center space-x-2 active:scale-95 ${className}`}
         >
           <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -180,7 +180,7 @@ export default function ShareButton({
 
       {/* Copy Toast Feedbacks */}
       {copied && (
-        <div className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-3 duration-200 border border-primary/20">
+        <div className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground text-sm font-bold px-4 py-2.5 rounded-full border-2 border-ink shadow-[3px_3px_0_var(--ink)] flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-3 duration-200">
           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
           </svg>
@@ -189,7 +189,7 @@ export default function ShareButton({
       )}
 
       {instagramToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-card text-foreground border border-card-border text-sm font-semibold px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-3 duration-200">
+        <div className="fixed bottom-6 right-6 z-50 bg-card text-foreground border-2 border-ink text-sm font-bold px-4 py-2.5 rounded-full shadow-[3px_3px_0_var(--ink)] flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-3 duration-200">
           <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -199,7 +199,7 @@ export default function ShareButton({
 
       {/* Dropdown Menu */}
       {open && (
-        <div className="absolute right-0 mt-2 w-64 bg-card border border-card-border rounded-2xl shadow-2xl z-50 p-2 text-sm animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 mt-2 w-64 bg-card border-2 border-ink rounded-2xl shadow-[5px_5px_0_var(--ink)] z-50 p-2 text-sm animate-in fade-in zoom-in-95 duration-150">
           <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-foreground/40 border-b border-card-border mb-1">
             Share Story via
           </div>

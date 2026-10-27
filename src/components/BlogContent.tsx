@@ -14,16 +14,17 @@ export default function BlogContent({ htmlContent }: BlogContentProps) {
 
   return (
     <article 
+      data-prose
       className="prose prose-lg dark:prose-invert max-w-none break-words overflow-x-hidden
-        prose-headings:text-foreground prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:mb-2 prose-headings:mt-8 first:prose-headings:mt-0
-        prose-p:text-foreground/80 prose-p:leading-relaxed prose-p:my-3
-        prose-a:text-primary prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
+        prose-headings:font-display prose-headings:text-foreground prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:mb-3 prose-headings:mt-10 first:prose-headings:mt-0
+        prose-p:text-foreground/80 prose-p:leading-[1.8] prose-p:my-4
+        prose-a:text-foreground prose-a:font-bold prose-a:underline prose-a:decoration-primary prose-a:decoration-4 prose-a:underline-offset-4 hover:prose-a:bg-primary hover:prose-a:text-primary-foreground
         prose-strong:text-foreground prose-strong:font-bold
-        prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary-light/30 prose-blockquote:py-2 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:italic prose-blockquote:text-foreground/80 prose-blockquote:my-10
-        prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-12
+        prose-blockquote:not-italic prose-blockquote:font-semibold prose-blockquote:border-2 prose-blockquote:border-ink prose-blockquote:bg-primary-light prose-blockquote:py-3 prose-blockquote:px-6 prose-blockquote:rounded-2xl prose-blockquote:shadow-[4px_4px_0_var(--ink)] prose-blockquote:text-foreground prose-blockquote:my-10
+        prose-img:rounded-2xl prose-img:border-2 prose-img:border-ink prose-img:shadow-[6px_6px_0_var(--ink)] prose-img:my-12
         prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
-        prose-li:text-foreground/80 prose-li:my-2
-        prose-hr:border-card-border prose-hr:my-8"
+        prose-li:text-foreground/80 prose-li:my-2 prose-li:marker:text-primary
+        prose-hr:border-ink/20 prose-hr:my-10"
       dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
     />
   );

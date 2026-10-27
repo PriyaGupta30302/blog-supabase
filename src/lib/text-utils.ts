@@ -34,3 +34,12 @@ export function formatDate(dateString: string): string {
   
   return `${day}/${month}/${year}`;
 }
+
+/**
+ * Estimates reading time in whole minutes (min 1) at ~200 words per minute.
+ * @param html The HTML or plain text of the post
+ */
+export function readingTime(html: string): number {
+  const words = stripHtml(html).trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}

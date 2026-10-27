@@ -37,12 +37,12 @@ export default function BlogAuthGuard({ children, blogTitle }: BlogAuthGuardProp
   if (!isSignedIn) {
     const redirectUrl = encodeURIComponent(pathname);
     return (
-      <div className="my-12 p-8 md:p-12 bg-card rounded-3xl border border-card-border shadow-2xl text-center max-w-2xl mx-auto space-y-6">
-        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto text-2xl font-bold">
+      <div className="my-12 p-8 md:p-12 bg-card rounded-3xl border-2 border-ink shadow-[8px_8px_0_var(--ink)] text-center max-w-2xl mx-auto space-y-6">
+        <div className="w-16 h-16 rounded-2xl border-2 border-ink bg-accent-2 text-ink -rotate-6 flex items-center justify-center mx-auto text-2xl font-bold">
           🔒
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">
+          <h2 className="font-display text-2xl md:text-3xl font-extrabold text-foreground">
             Sign in to read full story
           </h2>
           <p className="text-sm text-foreground/60 max-w-md mx-auto">
@@ -53,13 +53,13 @@ export default function BlogAuthGuard({ children, blogTitle }: BlogAuthGuardProp
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href={`/sign-in?redirect_url=${redirectUrl}`}
-            className="w-full sm:w-auto px-8 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:bg-primary-hover active:scale-95 transition-all"
+            className="w-full sm:w-auto px-8 py-3.5 bg-primary text-primary-foreground font-bold rounded-full border-2 border-ink shadow-[4px_4px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
           >
             Sign In to Continue
           </Link>
           <Link
             href={`/sign-up?redirect_url=${redirectUrl}`}
-            className="w-full sm:w-auto px-8 py-3.5 bg-muted hover:bg-card-border text-foreground font-bold rounded-xl active:scale-95 transition-all border border-card-border"
+            className="w-full sm:w-auto px-8 py-3.5 bg-card text-foreground font-bold rounded-full border-2 border-ink shadow-[4px_4px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
           >
             Create Free Account
           </Link>

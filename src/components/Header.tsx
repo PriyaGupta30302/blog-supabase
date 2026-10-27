@@ -9,20 +9,23 @@ export default function Header() {
   const isAdmin = user?.publicMetadata?.role === "admin";
 
   return (
-    <header className="bg-background border-b border-card-border sticky top-0 z-10 transition-colors">
+    <header className="bg-background/85 backdrop-blur-md border-b-2 border-ink sticky top-0 z-40 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center flex-shrink-0">
-            <Link href="/" className="text-xl sm:text-2xl font-bold text-primary tracking-tight">
-              BlogApp
-            </Link>
-          </div>
-          
-          <nav className="flex items-center space-x-2 sm:space-x-6">
+          <Link href="/" className="group flex items-center gap-2.5 flex-shrink-0">
+            <span className="grid h-9 w-9 -rotate-6 place-items-center border-2 border-ink bg-primary font-display text-lg font-extrabold text-primary-foreground shadow-[3px_3px_0_var(--ink)] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
+              B
+            </span>
+            <span className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+              Blog<span className="text-primary">App</span>
+            </span>
+          </Link>
+
+          <nav className="flex items-center gap-2 sm:gap-4">
             {isLoaded && (
-              <Link 
-                href="/admin" 
-                className="bg-primary text-primary-foreground px-3 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
+              <Link
+                href="/admin"
+                className="sticker-sm bg-primary text-primary-foreground px-3 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
               >
                 Dashboard
               </Link>
@@ -33,10 +36,8 @@ export default function Header() {
             <SignedOut>
               {/* Auth buttons hidden from public view as per user request */}
             </SignedOut>
-            
-            {isAdmin && (
-              <div className="border-l border-gray-100 dark:border-gray-700 h-6 mx-2" />
-            )}
+
+            {isAdmin && <div className="bg-card-border w-px h-6 mx-1" />}
             <ThemeSwitcher />
           </nav>
         </div>
@@ -44,5 +45,3 @@ export default function Header() {
     </header>
   );
 }
-
-

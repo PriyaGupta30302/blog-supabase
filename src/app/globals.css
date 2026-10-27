@@ -3,54 +3,65 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Default Blue Theme */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: #eff6ff;
+  /* Default "Electric Blue" theme on warm paper */
+  --primary: #3b5bff;
+  --primary-hover: #2a45e0;
+  --primary-light: #e3e8ff;
   --primary-foreground: #ffffff;
-  --background: #f8f9fa;
-  --foreground: #111827;
-  /* --card-bg: #f1f5f9; */
-  --card-bg: #f7f9fc;
-  --card-border: #e5e7eb;
-  --muted: #f3f4f6;
+  --background: #f6f1e7;
+  --foreground: #14110f;
+  --card-bg: #fffdf8;
+  --card-border: #e4dccb;
+  --muted: #eee7d8;
+  --ink: #14110f;
+  --accent-2: #ffd23f;
 }
 
 [data-theme='green'] {
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-light: #ecfdf5;
-  --primary-foreground: #ffffff;
+  --primary: #00b86b;
+  --primary-hover: #009a58;
+  --primary-light: #d9f7e8;
+  --primary-foreground: #04170d;
+  --accent-2: #ff8fb1;
 }
 
 [data-theme='rose'] {
-  --primary: #f43f5e;
-  --primary-hover: #e11d48;
-  --primary-light: #fff1f2;
+  --primary: #ff3d7f;
+  --primary-hover: #e62468;
+  --primary-light: #ffe0ec;
   --primary-foreground: #ffffff;
+  --accent-2: #7cf2d0;
 }
 
 [data-theme='violet'] {
-  --primary: #8b5cf6;
-  --primary-hover: #7c3aed;
-  --primary-light: #f5f3ff;
+  --primary: #8a5cff;
+  --primary-hover: #7442f0;
+  --primary-light: #ece4ff;
   --primary-foreground: #ffffff;
+  --accent-2: #c6ff3d;
 }
 
 [data-theme='amber'] {
-  --primary: #f59e0b;
-  --primary-hover: #d97706;
-  --primary-light: #fffbeb;
-  --primary-foreground: #ffffff;
+  --primary: #ffa800;
+  --primary-hover: #e69500;
+  --primary-light: #fff0cc;
+  --primary-foreground: #1a1100;
+  --accent-2: #5b8cff;
 }
 
 [data-theme='dark'],
 .dark {
-  --background: #030712;
-  --foreground: #f9fafb;
-  --card-bg: #111827;
-  --card-border: #1f2937;
-  --muted: #111827;
+  --primary: #c6ff3d;
+  --primary-hover: #b2f01f;
+  --primary-light: #263012;
+  --primary-foreground: #0d1200;
+  --background: #0c0b10;
+  --foreground: #f5f3ee;
+  --card-bg: #17151e;
+  --card-border: #2b2836;
+  --muted: #1d1a26;
+  --ink: #f5f3ee;
+  --accent-2: #ff5fa2;
 }
 
 @theme inline {
@@ -63,8 +74,11 @@
   --color-card: var(--card-bg);
   --color-card-border: var(--card-border);
   --color-muted: var(--muted);
+  --color-ink: var(--ink);
+  --color-accent-2: var(--accent-2);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
 @keyframes shimmer {
@@ -80,7 +94,7 @@
   background: linear-gradient(
     90deg,
     var(--muted) 25%,
-    rgba(var(--primary-rgb, 37, 99, 235), 0.1) 50%,
+    var(--card-border) 50%,
     var(--muted) 75%
   );
   background-size: 200% 100%;
@@ -91,9 +105,9 @@
 .dark .skeleton {
   background: linear-gradient(
     90deg,
-    #1f2937 25%,
-    #374151 50%,
-    #1f2937 75%
+    #1d1a26 25%,
+    #2b2836 50%,
+    #1d1a26 75%
   );
   background-size: 200% 100%;
 }
@@ -111,7 +125,64 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Subtle paper grain over the whole app */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.dark body::before,
+[data-theme='dark'] body::before {
+  mix-blend-mode: screen;
+  opacity: 0.05;
+}
+
+/* Infinite marquee ticker */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Sticker surface: thick ink border + hard offset shadow */
+.sticker {
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.sticker-sm {
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
 }
 
 
+
+/* Blog detail: hide animated elements until GSAP has taken over (no flash) */
+.fx-pending .d-hide,
+.fx-pending .split-word {
+  opacity: 0;
+}

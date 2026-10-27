@@ -83,42 +83,47 @@ export default function CommentSection({ blogId, initialComments }: CommentSecti
   };
 
   return (
-    <div className="mt-16 space-y-8">
-      <h3 className="text-2xl font-bold text-foreground">Comments ({comments.length})</h3>
+    <div className="space-y-8">
+      <h3 className="font-display text-3xl font-extrabold tracking-tight text-foreground">
+        the chat <span className="ml-1 inline-block -rotate-3 border-2 border-ink bg-accent-2 px-2.5 text-xl text-ink shadow-[3px_3px_0_var(--ink)]">{comments.length}</span>
+      </h3>
 
       {user ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm rounded-xl border border-red-200 dark:border-red-800">
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-semibold rounded-xl border-2 border-red-500">
               {error}
             </div>
           )}
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment..."
-            className="w-full p-4 bg-background border border-card-border rounded-2xl focus:ring-2 focus:ring-primary focus:outline-none text-foreground transition-all min-h-[100px]"
+            placeholder="drop your thoughts..."
+            className="w-full p-4 bg-card border-2 border-ink rounded-2xl shadow-[4px_4px_0_var(--ink)] focus:shadow-[6px_6px_0_var(--primary)] focus:outline-none text-foreground placeholder:text-foreground/40 transition-all min-h-[110px]"
             required
           />
           <button
             type="submit"
             disabled={submitting || !newComment.trim()}
-            className="px-6 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:bg-primary-hover transition-all disabled:opacity-50"
+            className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-full border-2 border-ink shadow-[3px_3px_0_var(--ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all disabled:opacity-50 disabled:pointer-events-none"
           >
-            {submitting ? 'Posting...' : 'Post Comment'}
+            {submitting ? 'Posting...' : 'Send it'}
           </button>
         </form>
       ) : (
-        <div className="p-6 bg-muted rounded-2xl text-center">
-          <p className="text-foreground/60">Please sign in to join the discussion.</p>
+        <div className="p-6 bg-muted rounded-2xl text-center border-2 border-dashed border-ink">
+          <p className="font-semibold text-foreground/70">Sign in to join the chat ✌️</p>
         </div>
       )}
 
       <div className="space-y-6">
         {comments.map((comment) => (
-          <div key={comment.id} className="bg-card p-6 rounded-2xl border border-card-border shadow-sm group">
+          <div key={comment.id} className="bg-card p-5 sm:p-6 rounded-2xl border-2 border-ink shadow-[3px_3px_0_var(--ink)] group">
             <div className="flex justify-between items-start mb-2">
-              <div>
+              <div className="flex items-center">
+                <span className="mr-3 grid h-8 w-8 place-items-center rounded-full border-2 border-ink bg-primary-light text-sm font-extrabold text-foreground">
+                  {comment.user_name?.[0]?.toUpperCase() || '?'}
+                </span>
                 <span className="font-bold text-foreground">{comment.user_name}</span>
                 <span className="ml-2 text-xs text-foreground/40">
                   {new Date(comment.created_at).toLocaleDateString()}
@@ -135,11 +140,11 @@ export default function CommentSection({ blogId, initialComments }: CommentSecti
                 </button>
               )}
             </div>
-            <p className="text-foreground/80 whitespace-pre-wrap">{comment.content}</p>
+            <p className="text-foreground/80 whitespace-pre-wrap pl-11">{comment.content}</p>
           </div>
         ))}
         {comments.length === 0 && (
-          <p className="text-center text-foreground/40 py-8">No comments yet. Be the first to share your thoughts!</p>
+          <p className="text-center text-foreground/40 py-8">crickets... be the first to say something 🦗</p>
         )}
       </div>
     </div>
