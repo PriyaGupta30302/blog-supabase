@@ -1,5 +1,3 @@
-import sharp from 'sharp';
-
 /**
  * Downloads a remote image and returns it as a 1200x630 JPEG data URI.
  *
@@ -11,6 +9,9 @@ export async function toOgJpegDataUri(url: string, width = 1200, height = 630): 
   if (!url.startsWith('http')) return null;
 
   try {
+    // Loaded lazily: sharp is a native module, and a load failure on the host
+    // must only degrade the OG image, not crash the whole blog route.
+    const { default: sharp } = await import('sharp');
     const res = await fetch(url, { signal: AbortSignal.timeout(7000) });
     if (!res.ok) return null;
 
